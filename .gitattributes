@@ -1,0 +1,3 @@
+# LF everywhere — CRLF checkouts would break the byte-for-byte content
+# integrity check (npm run verify:content).
+* text=auto eol=lf
