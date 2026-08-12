@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deen Daily — Education & Practice Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Amiri:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0C1220; --panel:#141D30; --panel2:#0F1728; --panel3:#182238;
+  --lapis:#4A79C4; --brass:#C9A227; --brass-dim:#8f7620;
+  --moon:#EAE6DA; --slate:#8B94A7; --emerald:#3A9B72; --rose:#B05C5C;
+  --line:rgba(201,162,39,.22); --line2:rgba(139,148,167,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--moon);font-family:'Inter',sans-serif;line-height:1.6;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,121,196,.12), transparent);}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 110px}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;background:var(--panel2);border:1px solid var(--line2);
+  color:var(--moon);border-radius:10px;padding:10px 12px;font-size:.9rem;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--lapis)}
+textarea{resize:vertical;min-height:70px}
+
+/* header */
+header{text-align:center;padding:20px 0 4px}
+.bismillah{font-family:'Amiri',serif;font-size:1.6rem;color:var(--brass)}
+h1{font-family:'Marcellus',serif;font-size:1.45rem;font-weight:400;letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+.date-line{color:var(--slate);font-size:.8rem;margin-top:4px;letter-spacing:.04em}
+.hijri{color:var(--brass-dim);font-size:.78rem;font-family:'Marcellus',serif;letter-spacing:.08em}
+
+/* tabs */
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(12,18,32,.92);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:50}
+.nav button{background:none;border:none;color:var(--slate);font-size:.68rem;letter-spacing:.08em;
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;border-radius:10px;transition:color .2s}
+.nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav button.active{color:var(--brass)}
+.tab{display:none}.tab.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* shared */
+section{margin-top:30px}
+h2{font-family:'Marcellus',serif;font-weight:400;font-size:1rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brass);display:flex;align-items:center;gap:12px;margin-bottom:14px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px}
+.btn{background:var(--panel3);border:1px solid var(--line);color:var(--moon);border-radius:10px;
+  padding:9px 16px;font-size:.85rem;font-weight:500;transition:all .2s}
+.btn:hover{border-color:var(--brass)}
+.btn.gold{background:var(--brass);border-color:var(--brass);color:#0C1220;font-weight:600}
+.btn.small{padding:5px 12px;font-size:.78rem}
+.muted{color:var(--slate);font-size:.82rem}
+.pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--brass);
+  font-size:.68rem;letter-spacing:.1em;padding:2px 10px;border-radius:20px}
+
+/* streak */
+.streak{display:flex;justify-content:center;align-items:center;gap:14px;margin:14px 0 4px}
+.ring{width:74px;height:74px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font-family:'Marcellus',serif;font-size:1.4rem;color:var(--brass)}
+.ring .num span{font-size:.55rem;color:var(--slate);letter-spacing:.12em;text-transform:uppercase}
+.streak-label{font-size:.78rem;color:var(--slate);max-width:190px}
+.streak-label b{color:var(--moon)}
+
+/* mihrab signature */
+.mihrab{margin-top:22px;background:var(--panel);border:1px solid var(--line);
+  border-radius:130px 130px 14px 14px;padding:44px 24px 24px;position:relative;text-align:center}
+.mihrab::before{content:"";position:absolute;top:10px;left:10px;right:10px;bottom:10px;
+  border:1px solid rgba(201,162,39,.14);border-radius:120px 120px 8px 8px;pointer-events:none}
+.eyebrow{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass)}
+.hnum{font-family:'Marcellus',serif;color:var(--slate);font-size:.78rem;margin-top:4px}
+.htitle{font-family:'Marcellus',serif;font-size:1.25rem;margin:8px 0 12px}
+.htext{font-family:'Amiri',serif;font-size:1.1rem;color:#D8D3C4;font-style:italic;max-width:540px;margin:0 auto}
+.hlesson{font-size:.88rem;color:var(--slate);margin-top:14px;text-align:left;border-left:2px solid var(--lapis);padding-left:12px}
+.haction{margin-top:14px;background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:.86rem;text-align:left}
+.haction b{color:var(--brass);font-weight:600;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:2px}
+.hsource{margin-top:12px;font-size:.68rem;letter-spacing:.08em;color:var(--slate);text-transform:uppercase}
+
+/* motivation card */
+.motiv{margin-top:14px;background:linear-gradient(160deg, rgba(74,121,196,.14), var(--panel));
+  border:1px solid rgba(74,121,196,.3);border-radius:14px;padding:18px 20px}
+.motiv .mtext{font-family:'Amiri',serif;font-size:1.08rem;font-style:italic;color:var(--moon)}
+.motiv .msrc{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lapis);margin-top:8px}
+
+/* name card */
+.name-card{margin-top:14px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;
+  padding:16px 20px;display:flex;align-items:center;gap:18px}
+.name-ar{font-family:'Amiri',serif;font-size:2rem;color:var(--brass);min-width:90px;text-align:center}
+.name-info .tr{font-family:'Marcellus',serif;font-size:1.02rem}
+.name-info .mn{font-size:.83rem;color:var(--slate)}
+
+/* checklist */
+.check-grid{display:grid;gap:8px}
+.check{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid transparent;
+  border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .2s;user-select:none}
+.check:hover{border-color:var(--line)}
+.check .box{width:22px;height:22px;border:1.5px solid var(--slate);border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;color:transparent;transition:all .2s}
+.check.done{background:rgba(58,155,114,.1)}
+.check.done .box{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.check .lbl{font-size:.9rem}
+.check .sub{font-size:.7rem;color:var(--slate);display:block}
+.progress-note{margin-top:10px;font-size:.8rem;color:var(--slate);text-align:center}
+.progress-note.complete{color:var(--emerald)}
+
+/* accordion */
+details{background:var(--panel);border:1px solid var(--line2);border-radius:12px;margin-bottom:8px;overflow:hidden}
+summary{padding:13px 16px;cursor:pointer;font-size:.9rem;font-weight:500;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+summary::after{content:"+";color:var(--brass);font-size:1.1rem;flex-shrink:0}
+details[open] summary::after{content:"–"}
+.dbody{padding:2px 16px 16px;font-size:.87rem;color:#C9C4B6;border-top:1px solid var(--line2)}
+.dbody .ar{font-family:'Amiri',serif;font-size:1.25rem;color:var(--moon);margin:12px 0 4px;line-height:2}
+.dbody .meaning{color:var(--slate);font-size:.8rem;font-style:italic}
+.dbody .count{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--brass);
+  font-size:.68rem;letter-spacing:.1em;padding:2px 10px;border-radius:20px;margin-top:8px}
+.dbody ol,.dbody ul{padding-left:20px;margin:10px 0}
+.dbody li{margin-bottom:8px}
+.dbody b{color:var(--moon)}
+
+/* quran */
+.qstat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.qstat .card{text-align:center;padding:12px 8px}
+.qstat b{font-family:'Marcellus',serif;font-size:1.3rem;color:var(--brass);display:block}
+.qstat span{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.qbar{height:8px;background:var(--panel2);border-radius:8px;overflow:hidden;margin:6px 0 14px}
+.qbar div{height:100%;background:linear-gradient(90deg,var(--brass-dim),var(--brass));border-radius:8px;transition:width .3s}
+.qrow{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.qrow input,.qrow select{width:auto;flex:1;min-width:100px}
+.bm-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.bm-item:last-child{border-bottom:none}
+.bm-item .del{background:none;border:none;color:var(--rose);font-size:.75rem}
+.surah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;max-height:340px;overflow-y:auto;padding:4px}
+.schip{background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:7px 8px;font-size:.72rem;cursor:pointer;transition:all .15s;text-align:center;user-select:none}
+.schip:hover{border-color:var(--brass)}
+.schip.memo{background:rgba(58,155,114,.15);border-color:var(--emerald);color:#B9E4D0}
+.schip .sn{color:var(--slate);font-size:.62rem}
+.schip.memo .sn{color:var(--emerald)}
+
+/* learn */
+.step{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line2)}
+.step:last-child{border-bottom:none}
+.step .n{font-family:'Marcellus',serif;color:var(--brass);font-size:1.1rem;min-width:24px}
+.step h3{font-size:.93rem;font-weight:600}
+.step p{font-size:.83rem;color:var(--slate)}
+.step .res{font-size:.76rem;color:var(--lapis);margin-top:2px}
+.names-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ncell{background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:10px;text-align:center}
+.ncell .a{font-family:'Amiri',serif;font-size:1.2rem;color:var(--brass)}
+.ncell .t{font-size:.74rem;font-weight:600}
+.ncell .m{font-size:.66rem;color:var(--slate)}
+
+/* journal */
+.jlabel{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin:16px 0 6px;display:block}
+.jgrat input{margin-bottom:6px}
+.jprompt{font-family:'Amiri',serif;font-style:italic;color:#D8D3C4;font-size:1rem;margin-bottom:8px}
+.dua-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:.87rem}
+.dua-item:last-child{border-bottom:none}
+.hist-item{padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.hist-item:hover .hd{color:var(--brass)}
+.hist-item .hd{font-size:.85rem;font-weight:500}
+.hist-body{font-size:.82rem;color:var(--slate);white-space:pre-wrap;margin-top:6px}
+.save-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--emerald);
+  color:#fff;padding:8px 20px;border-radius:20px;font-size:.8rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:60}
+.save-toast.show{opacity:1}
+
+footer{margin-top:40px;text-align:center;color:var(--slate);font-size:.72rem}
+footer .ar{font-family:'Amiri',serif;font-size:1rem;color:var(--brass-dim)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:420px){.mihrab{padding:36px 16px 20px;border-radius:90px 90px 12px 12px}.qstat{grid-template-columns:1fr 1fr 1fr;gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1>Deen Daily</h1>
+  <div class="date-line" id="dateLine"></div>
+  <div class="hijri" id="hijriLine"></div>
+</header>
+
+<!-- ============ TODAY ============ -->
+<div class="tab active" id="tab-today">
+  <div class="streak">
+    <div class="ring">
+      <svg width="74" height="74"><circle cx="37" cy="37" r="32" fill="none" stroke="rgba(139,148,167,.2)" stroke-width="4"/>
+      <circle id="ringFill" cx="37" cy="37" r="32" fill="none" stroke="#C9A227" stroke-width="4" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201"/></svg>
+      <div class="num"><b id="streakNum">0</b><span>day streak</span></div>
+    </div>
+    <div class="streak-label">"The most beloved deeds to Allah are the <b>most consistent</b>, even if small." — Bukhari &amp; Muslim</div>
+  </div>
+
+  <div class="mihrab">
+    <div class="eyebrow">Today's Lesson · Nawawi's Forty</div>
+    <div class="hnum" id="hNum"></div>
+    <div class="htitle" id="hTitle"></div>
+    <div class="htext" id="hText"></div>
+    <div class="hlesson" id="hLesson"></div>
+    <div class="haction"><b>Apply it today</b><span id="hAction"></span></div>
+    <div class="hsource" id="hSource"></div>
+  </div>
+
+  <div class="motiv">
+    <div class="eyebrow" style="color:var(--lapis)">Light for the day</div>
+    <div class="mtext" id="mText"></div>
+    <div class="msrc" id="mSrc"></div>
+  </div>
+
+  <div class="name-card">
+    <div class="name-ar" id="nAr"></div>
+    <div class="name-info">
+      <div class="tr" id="nTr"></div>
+      <div class="mn" id="nMn"></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Daily Practice</h2>
+    <div class="check-grid" id="checkGrid"></div>
+    <div class="progress-note" id="progressNote"></div>
+  </section>
+
+  <section>
+    <h2>The Fortress — Adhkar</h2>
+    <div id="adhkarList"></div>
+  </section>
+</div>
+
+<!-- ============ QURAN ============ -->
+<div class="tab" id="tab-quran">
+  <section style="margin-top:16px">
+    <h2>Reading Tracker</h2>
+    <div class="qstat">
+      <div class="card"><b id="qPage">1</b><span>current page</span></div>
+      <div class="card"><b id="qJuz">1</b><span>juz</span></div>
+      <div class="card"><b id="qPct">0%</b><span>of mushaf</span></div>
+    </div>
+    <div class="qbar"><div id="qBarFill" style="width:0%"></div></div>
+    <div class="qrow">
+      <button class="btn" id="qMinus">−1 page</button>
+      <button class="btn gold" id="qPlus">+1 page read</button>
+      <input type="number" id="qSet" min="1" max="604" placeholder="jump to page" style="max-width:130px">
+      <button class="btn small" id="qSetBtn">Set</button>
+    </div>
+    <p class="muted" id="qSurahNow"></p>
+    <div class="card" style="margin-top:12px">
+      <span class="jlabel" style="margin-top:0">Khatmah calculator</span>
+      <div class="qrow">
+        <select id="kPPD" style="max-width:160px">
+          <option value="1">1 page/day</option><option value="2" selected>2 pages/day</option>
+          <option value="4">4 pages/day (~khatmah in 5 months)</option><option value="10">10 pages/day</option>
+          <option value="20">20 pages/day (khatmah/month)</option>
+        </select>
+        <span class="muted" id="kResult"></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bookmarks</h2>
+    <div class="qrow">
+      <select id="bmSurah"></select>
+      <input type="text" id="bmNote" placeholder="note — 'ayah about patience...'">
+      <button class="btn gold small" id="bmAdd">Save</button>
+    </div>
+    <div id="bmList"><p class="muted">No bookmarks yet. Mark where an ayah stopped you.</p></div>
+  </section>
+
+  <section>
+    <h2>Hifz — Memorization</h2>
+    <p class="muted" style="margin-bottom:10px"><span id="hifzCount">0</span> of 114 surahs memorized · tap a surah to toggle</p>
+    <div class="surah-grid" id="surahGrid"></div>
+  </section>
+
+  <section>
+    <h2>How to Memorize — The Method</h2>
+    <div id="hifzGuide">
+      <details open>
+        <summary>Start in this order</summary>
+        <div class="dbody">
+          <ol>
+            <li><b>Al-Fatiha + the last 10 surahs</b> (An-Nas back to Al-Fil) — these carry your salah. Foundation first.</li>
+            <li><b>Juz 30 (Juz 'Amma), backwards</b> — from An-Nas up to An-Naba. Short surahs build momentum and win-streaks; each one immediately upgrades your prayer.</li>
+            <li><b>Juz 29</b> — Al-Mulk to Al-Mursalat. Slightly longer, trains stamina.</li>
+            <li><b>The famous surahs</b> — Al-Mulk (protection in the grave — Tirmidhi, hasan), Ya-Sin, Al-Kahf (Friday sunnah — Hakim, sahih), As-Sajdah, Al-Waqi'ah.</li>
+            <li><b>Then choose a lane:</b> continue backwards (Juz 28, 27...) for momentum, or start Al-Baqarah forward — the classical hifz-school path. Both are valid; consistency decides, not the route.</li>
+          </ol>
+        </div>
+      </details>
+      <details>
+        <summary>The 3-track daily system (sabaq · sabqi · manzil)</summary>
+        <div class="dbody">
+          <ul>
+            <li><b>Sabaq (new):</b> today's fresh portion — 3 to 5 lines. Small enough to be perfect.</li>
+            <li><b>Sabqi (recent):</b> everything from the last 7 days, recited once daily. This is where memorization actually solidifies.</li>
+            <li><b>Manzil (old):</b> a rotating cycle through everything older. Even 5 minutes. Old hifz unrehearsed is hifz lost — the Prophet ﷺ said the Quran escapes faster than a camel from its rope (Bukhari &amp; Muslim).</li>
+          </ul>
+          <p><b>Rule:</b> never add new until yesterday's is solid. Review outranks progress.</p>
+        </div>
+      </details>
+      <details>
+        <summary>The technique — how a page enters the heart</summary>
+        <div class="dbody">
+          <ol>
+            <li><b>Meaning first.</b> Read the translation of the portion once. Understood words anchor; sounds alone slip.</li>
+            <li><b>Listen-repeat:</b> one reciter only (Al-Husary or Al-Minshawi's teaching recordings are the classic choices), loop the ayah, mimic exactly.</li>
+            <li><b>The 10+10:</b> read the ayah looking 10 times, then from memory 10 times. Chain: ayah 1, then 1+2, then 1+2+3.</li>
+            <li><b>One mushaf for life.</b> Same print, same layout — your visual memory memorizes the page geography too.</li>
+            <li><b>Recite it in salah the same day.</b> Tonight's Isha sunnah is the test. Nothing exposes weak hifz like standing in prayer.</li>
+            <li><b>Recite to someone weekly.</b> A friend, your wife, a teacher, even a voice memo you replay. Accountability is half the system.</li>
+            <li><b>The golden hour:</b> after Fajr, before the world wakes. The classical consensus and the modern sleep science agree.</li>
+          </ol>
+        </div>
+      </details>
+      <details>
+        <summary>What the scholars added</summary>
+        <div class="dbody">
+          <ul>
+            <li><b>Du'a</b> — ask the One who revealed it to preserve it in you.</li>
+            <li><b>Leave sins.</b> Imam ash-Shafi'i complained of weak memory to his teacher Waki', who prescribed leaving disobedience: "knowledge is light, and Allah's light is not given to the sinner."</li>
+            <li><b>Halal sustenance</b> — you've already built this into your life; it feeds the same system.</li>
+            <li><b>Don't compare speeds.</b> The one who stumbles gets a double reward (Bukhari &amp; Muslim). Struggle is not failure; it's counted twice.</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>If reading Arabic is still slow — the pre-path</summary>
+        <div class="dbody">
+          <ol>
+            <li><b>Qaida stage:</b> Noorani Qaida or Qaidah an-Nuraniyah with audio (2–4 weeks of 15 min/day rebuilds fluency).</li>
+            <li><b>Follow-along stage:</b> read the daily page while the reciter plays. Eyes on text, ears on the sheikh.</li>
+            <li><b>Tajweed later:</b> perfect the basics (heavy/light letters, madd lengths) once flow exists. A local teacher or Bayyinah/Quran Revolution style course when ready.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+  </section>
+</div>
+
+<!-- ============ LEARN ============ -->
+<div class="tab" id="tab-learn">
+  <section style="margin-top:16px">
+    <h2>The Path — Roadmap</h2>
+    <div class="card">
+      <div class="step"><div class="n">١</div><div><h3>Aqeedah — know Him first</h3><p>The 99 Names and the meaning of la ilaha illa Allah. Everything else is a branch of this root.</p><div class="res">Daily Name below · "Explanation of the Beautiful Names" (as-Sa'di)</div></div></div>
+      <div class="step"><div class="n">٢</div><div><h3>Salah — the anchor</h3><p>Perfect the five before adding extras. Learn what you recite so prayer becomes conversation.</p><div class="res">Goal: all five on time, 30 days straight</div></div></div>
+      <div class="step"><div class="n">٣</div><div><h3>Quran — small &amp; consistent</h3><p>One page with tafsir beats a juz without understanding.</p><div class="res">Tafsir as-Sa'di · Ibn Kathir (abridged)</div></div></div>
+      <div class="step"><div class="n">٤</div><div><h3>Adhkar — the fortress</h3><p>Morning and evening protection built into routine like brushing your teeth.</p><div class="res">Fortress on Today tab · Hisnul Muslim</div></div></div>
+      <div class="step"><div class="n">٥</div><div><h3>Seerah — the application layer</h3><p>His ﷺ life shows the deen in traffic, business, family, conflict.</p><div class="res">"The Sealed Nectar" (ar-Raheeq al-Makhtum)</div></div></div>
+      <div class="step"><div class="n">٦</div><div><h3>Hadith — one a day</h3><p>Nawawi's Forty are the pillars. This app cycles all 42 automatically.</p><div class="res">Full collection below · sunnah.com for complete texts</div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Nawawi's Forty — Browse All</h2>
+    <div id="hadithBrowser"></div>
+  </section>
+
+  <section>
+    <h2>Hope &amp; Motivation — The Collection</h2>
+    <div id="motivBrowser"></div>
+  </section>
+
+  <section>
+    <h2>The 99 Names of Allah</h2>
+    <p class="muted" style="margin-bottom:10px">The authentic hadith (Bukhari &amp; Muslim) gives the number 99 without an itemized list — the famous enumeration is a later compilation. This grid gathers names established in the Quran and Sunnah.</p>
+    <div class="names-grid" id="namesGrid"></div>
+  </section>
+</div>
+
+<!-- ============ JOURNAL ============ -->
+<div class="tab" id="tab-journal">
+  <section style="margin-top:16px">
+    <h2>Today's Journal</h2>
+    <div class="card">
+      <span class="jlabel" style="margin-top:0">Shukr — three blessings today</span>
+      <p class="muted" style="margin-bottom:8px">"If you are grateful, I will surely increase you." (14:7)</p>
+      <div class="jgrat">
+        <input type="text" id="g1" placeholder="1.">
+        <input type="text" id="g2" placeholder="2.">
+        <input type="text" id="g3" placeholder="3.">
+      </div>
+
+      <span class="jlabel">Muhasabah — today's reflection</span>
+      <div class="jprompt" id="jPrompt"></div>
+      <textarea id="jReflect" placeholder="Write honestly. Umar (ra) said: take account of yourselves before you are taken to account."></textarea>
+
+      <span class="jlabel">Free space</span>
+      <textarea id="jFree" placeholder="Anything on your heart — worries handed to Allah, wins, intentions for tomorrow..."></textarea>
+
+      <div style="margin-top:14px;text-align:right">
+        <button class="btn gold" id="jSave">Save today's entry</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>My Du'a List</h2>
+    <p class="muted" style="margin-bottom:8px">The du'as you refuse to stop making. Read this list after every salah — persistence is answered.</p>
+    <div class="card">
+      <div id="duaList"></div>
+      <div class="qrow" style="margin-top:10px">
+        <input type="text" id="duaNew" placeholder="e.g., righteous children · the supervisor role if it's khayr · the house...">
+        <button class="btn small gold" id="duaAdd">Add</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Past Entries</h2>
+    <div id="histList"><p class="muted">Entries will appear here as your journal grows.</p></div>
+  </section>
+</div>
+
+<div class="save-toast" id="toast">Saved ✓</div>
+
+<footer>
+  <div class="ar">رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ</div>
+  <p>Our Lord, accept from us. You are the All-Hearing, All-Knowing.</p>
+  <p style="margin-top:10px;opacity:.75">Hadith are condensed renderings with gradings shown. Verify full texts at sunnah.com. For rulings, ask qualified scholars.</p>
+</footer>
+
+</div>
+
+<nav class="nav">
+  <button data-tab="today" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Today</button>
+  <button data-tab="quran"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Quran</button>
+  <button data-tab="learn"><svg viewBox="0 0 24 24"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>Learn</button>
+  <button data-tab="journal"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Journal</button>
+</nav>
+<script>
+const HADITH=[
+[1,"Actions Are by Intentions","Actions are only by intentions, and every person will have only what they intended.","One deed can be worship or habit depending on the heart behind it. Intention is the switch that turns ordinary life — work, driving, providing — into reward.","Before one routine task today (a shift task, a school drop-off), pause and set an intention: 'This is for Allah, to care for what He entrusted to me.'"],
+[2,"Islam, Iman, Ihsan","Jibril came and asked the Prophet ﷺ about Islam (the five pillars), Iman (the six beliefs), and Ihsan: 'To worship Allah as though you see Him, for though you do not see Him, He sees you.'","The deen has three floors: body (Islam), heart (Iman), and excellence (Ihsan). Ihsan is the goal — living watched.","In one salah today, pray as if you can see Him. Slow down just that one."],
+[3,"Built on Five","Islam is built upon five: testimony of faith, salah, zakah, hajj, and fasting Ramadan.","These are the load-bearing walls. Strengthen the pillars before decorating the house.","Audit yourself honestly: which pillar is weakest right now? Write one step to fix it."],
+[4,"Deeds Are by Endings","Your creation was decreed in stages, and deeds are judged by their endings.","No arrogance about your good state, no despair about your past. The race isn't over — finish strong.","Make du'a: 'O Turner of hearts, keep my heart firm on Your deen.'"],
+[5,"No Innovation","Whoever introduces into this matter of ours what is not from it, it is rejected.","Worship is received, not invented. Sincerity needs correctness to count.","Pick one practice you do and verify its source — knowing why builds conviction."],
+[6,"Halal Is Clear","The halal is clear and the haram is clear, and between them are doubtful matters. Whoever avoids the doubtful protects his deen and honor.","This is your halal-screening principle applied to everything — the grey zone is where most people slip.","Identify one 'grey area' in your life (income, entertainment, dealings) and resolve it."],
+[7,"The Deen Is Sincerity","The deen is naseehah — sincerity toward Allah, His Book, His Messenger, the leaders, and the common Muslims.","Faith isn't private self-improvement; it's sincere goodwill toward everyone around you.","Give one person sincere, kind advice today — or receive some without defensiveness."],
+[8,"Sanctity","I have been commanded to fight until people testify... and their blood and wealth are protected.","A Muslim's life, wealth, and honor are sacred. Honor includes not backbiting them.","Guard your tongue from one conversation about someone who isn't present."],
+[9,"Do What You Can","What I have forbidden you, avoid. What I have commanded you, do as much as you can.","Prohibitions are absolute; commands flex with capacity. Allah doesn't burden beyond ability — but 'as much as you can' means actually trying.","Find your 'can': if you can't pray sunnah after a 12-hour shift, pray two instead of zero."],
+[10,"Pure Income, Answered Du'a","Allah is pure and accepts only what is pure... then he mentioned the traveler raising his hands — but his food is haram, his drink is haram — how can he be answered?","Halal earnings aren't just fiqh, they're the plumbing of answered du'a.","You already screen your investments — today, thank Allah for that habit and make du'a right after a halal meal."],
+[11,"Leave the Doubt","Leave what makes you doubt for what does not make you doubt.","The heart has a built-in warning system. When something feels off, that unease is data.","Next time you hesitate over a decision today, treat the hesitation as a signal — pause and check."],
+[12,"Mind Your Business","From the excellence of a person's Islam is leaving what does not concern him.","Half of spiritual clutter is other people's affairs — feeds, drama, news you can't act on.","Cut 15 minutes of scrolling today and give it to one Quran page."],
+[13,"Love for Your Brother","None of you truly believes until he loves for his brother what he loves for himself.","Envy inverts this hadith. The cure for hasad in your own heart is actively wanting good for others.","Make du'a for someone to receive the exact thing you want most."],
+[14,"Life Is Sacred","The blood of a Muslim is not lawful except in three cases prescribed by law.","Human life is the heaviest thing in the scale. This extends to never treating harm casually.","Reflect: your RT work preserves the sanctity of life daily. Renew that intention."],
+[15,"Speak Good or Be Silent","Whoever believes in Allah and the Last Day, let him speak good or remain silent, honor his neighbor, and honor his guest.","Three tests of faith: the tongue, the neighbor, the guest. Silence is a valid answer.","In one heated moment today (work, road, home), choose silence over the comeback."],
+[16,"Do Not Get Angry","A man asked for advice. The Prophet ﷺ said: 'Do not get angry.' He repeated the question; the answer stayed the same.","Anger is the door most regret walks through — including parking lot arguments. Not suppressing feeling, but refusing to let it drive.","Learn the protocol: when angry, say a'udhu billah, change position (stand→sit), make wudu."],
+[17,"Excellence in Everything","Allah has prescribed ihsan in all things.","Excellence isn't reserved for worship — how you chart at work, how you code, how you park. All of it can be done beautifully.","Do one mundane task today at deliberately high quality, as worship."],
+[18,"Follow Bad with Good","Fear Allah wherever you are, follow a bad deed with a good deed and it will erase it, and treat people with good character.","The whole deen in three lines: taqwa with Allah, repair with deeds, beauty with people.","If you slip today, don't spiral — immediately do a good deed to erase it. That's the system."],
+[19,"Be Mindful of Allah","Be mindful of Allah and He will protect you. If you ask, ask Allah. Know that if the whole nation gathered to harm you, they could not — except by what Allah has written.","This is the antidote to fearing envious people. Protection is a transaction: guard His limits, He guards you.","Memorize the line: 'If the whole nation gathered to harm you...' — carry it into tense moments."],
+[20,"Modesty","If you feel no shame, then do as you wish.","Haya (modesty/shame before Allah) is the internal brake. When it dies, everything is permitted.","Ask before one action today: 'Would I do this if I remembered He's watching?' (Ihsan again.)"],
+[21,"Then Be Steadfast","Say: 'I believe in Allah' — then be steadfast.","Istiqamah beats intensity. Not the person who prays all night once, but the one who never misses Fajr.","Protect your smallest consistent habit today. Don't break the chain."],
+[22,"The Path Is Enough","A man asked: if I pray the obligatory, fast Ramadan, treat halal as halal and haram as haram, and add nothing — will I enter Paradise? He ﷺ said: Yes.","The bar for Paradise is mercy, not perfection. Extras are love, not entry requirements. This kills religious burnout.","Release perfectionism today. Do the fard well; let that be enough for now."],
+[23,"Purity Is Half of Faith","Purity is half of faith, alhamdulillah fills the scale, and the Quran is a proof for you or against you.","Every wudu is worship. And the Quran question: is it currently evidence for you or against you?","Make wudu once today slowly, with presence, knowing sins fall with the water."],
+[24,"O My Servants","Hadith Qudsi: O My servants, I have forbidden oppression upon Myself, so do not oppress one another... O My servants, it is only your deeds I record for you, then I repay you for them.","Allah forbade dhulm on Himself. Every injustice you suffer is seen and will be repaid — the parking lot included.","Hand one grievance over: 'O Allah, You saw it. I leave it with You.'"],
+[25,"Dhikr Levels the Field","The poor companions said: the wealthy took all the rewards — they pray as we pray but give charity from surplus wealth. He ﷺ said: every tasbih is charity, every takbir is charity...","Dhikr is the currency everyone can mint. No wealth required for a full scale.","100x SubhanAllah on the commute. It costs nothing and weighs everything."],
+[26,"Every Joint Owes Charity","Every joint of a person owes charity daily: justice between two is charity, helping a man onto his mount is charity, a good word is charity, every step to prayer is charity, removing harm from the road is charity.","Your body is a debt; small kindnesses are the payment plan. Charity was never only money.","Pay today's installment: one good word, one small help, one harm removed."],
+[27,"Consult Your Heart","Righteousness is good character, and sin is what wavers in your chest and you would hate for people to discover.","You carry a fatwa machine in your ribcage. The thing you'd hide is the thing to examine.","One honest self-check: what am I currently doing that I'd minimize if asked about it?"],
+[28,"Hold the Rope","I advise you with taqwa, and hearing and obeying... hold firmly to my sunnah and the sunnah of the rightly guided caliphs — bite onto it with your molars.","'Bite with the molars' — the sunnah is kept through grip, especially when the environment pulls the other way.","Revive one small sunnah today: right side first, saying salam fully, eating with three fingers' worth of gratitude."],
+[29,"Guard This","Mu'adh asked about entering Paradise. The Prophet ﷺ listed the pillars, then the gates of good — fasting, charity, night prayer — then grabbed his own tongue: 'Restrain this. Is there anything that throws people on their faces into the Fire except the harvest of their tongues?'","After all the great deeds, the final warning was the tongue. It undoes what everything else builds.","One day, one rule: no complaint, no mockery, no backbite. Watch how hard — and clarifying — it is."],
+[30,"The Boundaries","Allah has set obligations, so do not neglect them; set limits, so do not transgress them; forbidden things, so do not violate them; and stayed silent about things as mercy — so do not dig into them.","The deen has a defined API: requirements, limits, and merciful silence. Don't invent restrictions Allah never made.","Notice one thing today that's simply permissible — and enjoy it as a mercy, guilt-free."],
+[31,"True Zuhd","Be detached from the dunya and Allah will love you; be detached from what people possess and people will love you.","Zuhd isn't poverty — it's the dunya in your hand, not your heart. And ignoring what others have is the social version: the end of comparison.","Unfollow, mute, or skip one comparison trigger today."],
+[32,"No Harm","There should be neither harm nor reciprocating harm.","Four words that govern all dealings — business, neighbors, family, the road. You don't initiate damage and you don't escalate it.","De-escalate one friction today. Absorb it; that's strength, not weakness."],
+[33,"Proof and Oath","If people were given according to their claims, men would claim the wealth and blood of others. The burden of proof is on the claimant, and the oath on the one who denies.","Islam built due process into its DNA. Accusations — like the one thrown at you — require evidence. This is the divine standard.","Apply it inward: don't assume motives about anyone today without proof."],
+[34,"Change It","Whoever sees an evil, let him change it with his hand; if unable, with his tongue; if unable, with his heart — and that is the weakest of faith.","A three-tier response protocol. Even when powerless, the heart's refusal to normalize wrong is still faith.","Identify your tier in one situation today — and act at the level you actually have."],
+[35,"Brothers","Do not envy one another, inflate prices against one another, hate one another, turn away from one another... Be, O servants of Allah, brothers. Taqwa is here — and he pointed to his chest three times.","The community's diseases named in one list — envy first. And the location of piety: not appearance, the chest.","Judge one person today by less than you usually do. Taqwa is hidden; assume the best."],
+[36,"Relieve and Be Relieved","Whoever relieves a believer of a hardship, Allah relieves him of a hardship on the Day of Judgment... Allah helps the servant as long as the servant helps his brother. Whoever travels a path seeking knowledge, Allah eases his path to Paradise.","Divine reciprocity: your help triggers His help. And your deen study tonight? It's literally paving your road to Jannah.","Relieve one hardship today — cover a task, ease a debt, solve someone's stuck problem."],
+[37,"The Multiplication","Whoever intends a good deed and doesn't do it, Allah records it as one complete good deed. If he does it, it is recorded ten to seven hundred times over. An evil deed intended but left — recorded as a good deed.","The most generous accounting system ever written. The math is rigged in your favor.","Intend three good deeds right now. You just earned three rewards — now go collect the multiplier."],
+[38,"Until I Love Him","Hadith Qudsi: My servant draws near to Me with nothing more beloved than what I made obligatory, and continues drawing near with voluntary deeds until I love him. When I love him, I am his hearing, his sight, his hand...","The ceiling of the deen: divine love, earned by fard first, then nawafil. Guidance in every limb follows.","Add one voluntary act today — two rak'ahs of duha, one extra page — as a step toward being loved."],
+[39,"The Pardon","Allah has pardoned my ummah for mistakes, forgetfulness, and what they are coerced into.","The deen is not a trap. Honest error carries no sin. This should end scrupulous anxiety about accidents.","Forgive yourself for one honest mistake you've been carrying. Allah already did."],
+[40,"A Stranger Passing Through","Be in this world as if you were a stranger or a traveler. When evening comes, do not expect morning; when morning comes, do not expect evening.","A traveler packs light, doesn't renovate the hotel, and keeps moving toward home. Urgency without panic.","Do one thing today you'd regret leaving undone — a call, an apology, a sadaqah."],
+[41,"Aligned Desires","None of you truly believes until his desires follow what I have brought.","The final stage of faith: not just obeying reluctantly, but wanting what He ﷺ taught. Preferences reshaped.","Notice one command you follow grudgingly. Ask Allah to make you love it."],
+[42,"The Ocean of Forgiveness","Hadith Qudsi: O son of Adam, were your sins to reach the clouds of the sky and you sought My forgiveness, I would forgive you... were you to come to Me with sins nearly the size of the earth, not associating anything with Me, I would meet you with forgiveness the same size.","The last hadith of the collection is the door that never closes. Whatever the past holds, it fits inside this.","End tonight with 100x astaghfirullah — and mean the freedom it buys."]
+];
+const SOURCES=["Bukhari & Muslim","Muslim","Bukhari & Muslim","Bukhari & Muslim","Bukhari & Muslim","Bukhari & Muslim","Muslim","Bukhari & Muslim","Bukhari & Muslim","Muslim","Tirmidhi & Nasa'i — sahih","Tirmidhi — hasan","Bukhari & Muslim","Bukhari & Muslim","Bukhari & Muslim","Bukhari","Muslim","Tirmidhi — hasan","Tirmidhi — hasan sahih","Bukhari","Muslim","Muslim","Muslim","Muslim (Hadith Qudsi)","Muslim","Bukhari & Muslim","Muslim; Ahmad & Darimi — hasan","Abu Dawud & Tirmidhi — hasan sahih","Tirmidhi — hasan sahih","Daraqutni & others — hasan","Ibn Majah & others — hasan","Ibn Majah & Daraqutni — hasan","Bayhaqi — hasan; parts in Bukhari & Muslim","Muslim","Muslim","Muslim","Bukhari & Muslim","Bukhari (Hadith Qudsi)","Ibn Majah & Bayhaqi — hasan","Bukhari","Chain contested by hadith scholars; meaning confirmed by Quran 4:65","Tirmidhi — hasan (Hadith Qudsi)"];
+const NAMES=[["ٱللَّٰه","Allah","The One true God"],["ٱلرَّحْمَٰن","Ar-Rahman","The Most Merciful"],["ٱلرَّحِيم","Ar-Raheem","The Bestower of Mercy"],["ٱلْمَلِك","Al-Malik","The King"],["ٱلْقُدُّوس","Al-Quddus","The Most Pure"],["ٱلسَّلَام","As-Salam","The Source of Peace"],["ٱلْمُؤْمِن","Al-Mu'min","The Granter of Security"],["ٱلْمُهَيْمِن","Al-Muhaymin","The Guardian"],["ٱلْعَزِيز","Al-Aziz","The Almighty"],["ٱلْجَبَّار","Al-Jabbar","The Compeller, the Restorer"],["ٱلْمُتَكَبِّر","Al-Mutakabbir","The Supreme"],["ٱلْخَالِق","Al-Khaliq","The Creator"],["ٱلْبَارِئ","Al-Bari'","The Originator"],["ٱلْمُصَوِّر","Al-Musawwir","The Fashioner"],["ٱلْغَفَّار","Al-Ghaffar","The Ever-Forgiving"],["ٱلْقَهَّار","Al-Qahhar","The Subduer"],["ٱلْوَهَّاب","Al-Wahhab","The Giver of Gifts"],["ٱلرَّزَّاق","Ar-Razzaq","The Provider"],["ٱلْفَتَّاح","Al-Fattah","The Opener"],["ٱلْعَلِيم","Al-Aleem","The All-Knowing"],["ٱلْقَابِض","Al-Qabid","The Withholder"],["ٱلْبَاسِط","Al-Basit","The Extender"],["ٱلْخَافِض","Al-Khafid","The Abaser"],["ٱلرَّافِع","Ar-Rafi'","The Elevator"],["ٱلْمُعِزّ","Al-Mu'izz","The Giver of Honor"],["ٱلْمُذِلّ","Al-Mudhill","The Humiliator"],["ٱلسَّمِيع","As-Samee'","The All-Hearing"],["ٱلْبَصِير","Al-Baseer","The All-Seeing"],["ٱلْحَكَم","Al-Hakam","The Judge"],["ٱلْعَدْل","Al-Adl","The Utterly Just"],["ٱللَّطِيف","Al-Lateef","The Subtle, the Kind"],["ٱلْخَبِير","Al-Khabeer","The All-Aware"],["ٱلْحَلِيم","Al-Haleem","The Forbearing"],["ٱلْعَظِيم","Al-Adheem","The Magnificent"],["ٱلْغَفُور","Al-Ghafoor","The Great Forgiver"],["ٱلشَّكُور","Ash-Shakoor","The Most Appreciative"],["ٱلْعَلِيّ","Al-Aliyy","The Most High"],["ٱلْكَبِير","Al-Kabeer","The Most Great"],["ٱلْحَفِيظ","Al-Hafeedh","The Preserver"],["ٱلْمُقِيت","Al-Muqeet","The Sustainer"],["ٱلْحَسِيب","Al-Haseeb","The Reckoner"],["ٱلْجَلِيل","Al-Jaleel","The Majestic"],["ٱلْكَرِيم","Al-Kareem","The Most Generous"],["ٱلرَّقِيب","Ar-Raqeeb","The Watchful"],["ٱلْمُجِيب","Al-Mujeeb","The Responder to Du'a"],["ٱلْوَاسِع","Al-Wasi'","The All-Encompassing"],["ٱلْحَكِيم","Al-Hakeem","The All-Wise"],["ٱلْوَدُود","Al-Wadood","The Most Loving"],["ٱلْمَجِيد","Al-Majeed","The Glorious"],["ٱلْبَاعِث","Al-Ba'ith","The Resurrector"],["ٱلشَّهِيد","Ash-Shaheed","The Witness"],["ٱلْحَقّ","Al-Haqq","The Absolute Truth"],["ٱلْوَكِيل","Al-Wakeel","The Trustee, the Disposer of Affairs"],["ٱلْقَوِيّ","Al-Qawiyy","The All-Strong"],["ٱلْمَتِين","Al-Mateen","The Firm"],["ٱلْوَلِيّ","Al-Waliyy","The Protecting Ally"],["ٱلْحَمِيد","Al-Hameed","The Praiseworthy"],["ٱلْمُحْصِي","Al-Muhsee","The All-Enumerating"],["ٱلْمُبْدِئ","Al-Mubdi'","The Originator"],["ٱلْمُعِيد","Al-Mu'eed","The Restorer"],["ٱلْمُحْيِي","Al-Muhyee","The Giver of Life"],["ٱلْمُمِيت","Al-Mumeet","The Bringer of Death"],["ٱلْحَيّ","Al-Hayy","The Ever-Living"],["ٱلْقَيُّوم","Al-Qayyoom","The Sustainer of All"],["ٱلْوَاجِد","Al-Wajid","The Perceiver"],["ٱلْمَاجِد","Al-Majid","The Illustrious"],["ٱلْوَاحِدُ ٱلْأَحَد","Al-Wahid, Al-Ahad","The One, The Unique (13:16 · 112:1)"],["ٱلصَّمَد","As-Samad","The Eternal Refuge"],["ٱلْقَادِر","Al-Qadir","The Capable"],["ٱلْمُقْتَدِر","Al-Muqtadir","The Omnipotent"],["ٱلْمُقَدِّم","Al-Muqaddim","The One Who Brings Forward"],["ٱلْمُؤَخِّر","Al-Mu'akhkhir","The One Who Delays"],["ٱلْأَوَّل","Al-Awwal","The First"],["ٱلْآخِر","Al-Akhir","The Last"],["ٱلظَّاهِر","Adh-Dhahir","The Manifest"],["ٱلْبَاطِن","Al-Batin","The Hidden"],["ٱلْوَالِي","Al-Wali","The Governor"],["ٱلْمُتَعَالِي","Al-Muta'ali","The Most Exalted"],["ٱلْبَرّ","Al-Barr","The Source of Goodness"],["ٱلتَّوَّاب","At-Tawwab","The Accepter of Repentance"],["ٱلْمُنْتَقِم","Al-Muntaqim","The Avenger"],["ٱلْعَفُوّ","Al-Afuww","The Pardoner"],["ٱلرَّءُوف","Ar-Ra'oof","The Most Compassionate"],["مَالِكُ ٱلْمُلْك","Malik-ul-Mulk","Owner of All Sovereignty"],["ذُو ٱلْجَلَالِ وَٱلْإِكْرَام","Dhul-Jalali wal-Ikram","Possessor of Majesty and Honor"],["ٱلْمُقْسِط","Al-Muqsit","The Equitable"],["ٱلْجَامِع","Al-Jami'","The Gatherer"],["ٱلْغَنِيّ","Al-Ghaniyy","The Self-Sufficient"],["ٱلْمُغْنِي","Al-Mughni","The Enricher"],["ٱلْمَانِع","Al-Mani'","The Withholder"],["ٱلضَّارّ","Ad-Darr","The Distresser (by wisdom)"],["ٱلنَّافِع","An-Nafi'","The Benefactor"],["ٱلنُّور","An-Noor","The Light"],["ٱلْهَادِي","Al-Hadi","The Guide"],["ٱلْبَدِيع","Al-Badee'","The Incomparable Originator"],["ٱلْبَاقِي","Al-Baqi","The Everlasting"],["ٱلْوَارِث","Al-Warith","The Inheritor of All"],["ٱلرَّشِيد","Ar-Rasheed","The Guide to the Right Path"],["ٱلصَّبُور","As-Saboor","The Most Patient"]];
+/* Surahs: [n, name, meaning, ayahs, startPage (Madani 604-page mushaf)] */
+const SURAHS=[[1,"Al-Fatiha","The Opening",7,1],[2,"Al-Baqarah","The Cow",286,2],[3,"Aal-Imran","Family of Imran",200,50],[4,"An-Nisa","The Women",176,77],[5,"Al-Ma'idah","The Table Spread",120,106],[6,"Al-An'am","The Cattle",165,128],[7,"Al-A'raf","The Heights",206,151],[8,"Al-Anfal","The Spoils",75,177],[9,"At-Tawbah","The Repentance",129,187],[10,"Yunus","Jonah",109,208],[11,"Hud","Hud",123,221],[12,"Yusuf","Joseph",111,235],[13,"Ar-Ra'd","The Thunder",43,249],[14,"Ibrahim","Abraham",52,255],[15,"Al-Hijr","The Rocky Tract",99,262],[16,"An-Nahl","The Bee",128,267],[17,"Al-Isra","The Night Journey",111,282],[18,"Al-Kahf","The Cave",110,293],[19,"Maryam","Mary",98,305],[20,"Ta-Ha","Ta-Ha",135,312],[21,"Al-Anbiya","The Prophets",112,322],[22,"Al-Hajj","The Pilgrimage",78,332],[23,"Al-Mu'minun","The Believers",118,342],[24,"An-Nur","The Light",64,350],[25,"Al-Furqan","The Criterion",77,359],[26,"Ash-Shu'ara","The Poets",227,367],[27,"An-Naml","The Ants",93,377],[28,"Al-Qasas","The Stories",88,385],[29,"Al-Ankabut","The Spider",69,396],[30,"Ar-Rum","The Romans",60,404],[31,"Luqman","Luqman",34,411],[32,"As-Sajdah","The Prostration",30,415],[33,"Al-Ahzab","The Confederates",73,418],[34,"Saba","Sheba",54,428],[35,"Fatir","The Originator",45,434],[36,"Ya-Sin","Ya-Sin",83,440],[37,"As-Saffat","Those Ranged in Ranks",182,446],[38,"Sad","Sad",88,453],[39,"Az-Zumar","The Groups",75,458],[40,"Ghafir","The Forgiver",85,467],[41,"Fussilat","Explained in Detail",54,477],[42,"Ash-Shura","The Consultation",53,483],[43,"Az-Zukhruf","The Gold Adornments",89,489],[44,"Ad-Dukhan","The Smoke",59,496],[45,"Al-Jathiyah","The Kneeling",37,499],[46,"Al-Ahqaf","The Dunes",35,502],[47,"Muhammad","Muhammad",38,507],[48,"Al-Fath","The Victory",29,511],[49,"Al-Hujurat","The Chambers",18,515],[50,"Qaf","Qaf",45,518],[51,"Adh-Dhariyat","The Scatterers",60,520],[52,"At-Tur","The Mount",49,523],[53,"An-Najm","The Star",62,526],[54,"Al-Qamar","The Moon",55,528],[55,"Ar-Rahman","The Most Merciful",78,531],[56,"Al-Waqi'ah","The Inevitable",96,534],[57,"Al-Hadid","The Iron",29,537],[58,"Al-Mujadila","She Who Disputes",22,542],[59,"Al-Hashr","The Gathering",24,545],[60,"Al-Mumtahanah","She Who Is Examined",13,549],[61,"As-Saff","The Ranks",14,551],[62,"Al-Jumu'ah","Friday",11,553],[63,"Al-Munafiqun","The Hypocrites",11,554],[64,"At-Taghabun","Mutual Loss and Gain",18,556],[65,"At-Talaq","The Divorce",12,558],[66,"At-Tahrim","The Prohibition",12,560],[67,"Al-Mulk","The Sovereignty",30,562],[68,"Al-Qalam","The Pen",52,564],[69,"Al-Haqqah","The Inevitable Reality",52,566],[70,"Al-Ma'arij","The Ways of Ascent",44,568],[71,"Nuh","Noah",28,570],[72,"Al-Jinn","The Jinn",28,572],[73,"Al-Muzzammil","The Enshrouded One",20,574],[74,"Al-Muddaththir","The Cloaked One",56,575],[75,"Al-Qiyamah","The Resurrection",40,577],[76,"Al-Insan","The Human",31,578],[77,"Al-Mursalat","Those Sent Forth",50,580],[78,"An-Naba","The Great News",40,582],[79,"An-Nazi'at","Those Who Pull Out",46,583],[80,"Abasa","He Frowned",42,585],[81,"At-Takwir","The Folding Up",29,586],[82,"Al-Infitar","The Cleaving",19,587],[83,"Al-Mutaffifin","The Defrauders",36,587],[84,"Al-Inshiqaq","The Splitting",25,589],[85,"Al-Buruj","The Constellations",22,590],[86,"At-Tariq","The Night Comer",17,591],[87,"Al-A'la","The Most High",19,591],[88,"Al-Ghashiyah","The Overwhelming",26,592],[89,"Al-Fajr","The Dawn",30,593],[90,"Al-Balad","The City",20,594],[91,"Ash-Shams","The Sun",15,595],[92,"Al-Layl","The Night",21,595],[93,"Ad-Duha","The Morning Light",11,596],[94,"Ash-Sharh","The Expansion",8,596],[95,"At-Tin","The Fig",8,597],[96,"Al-Alaq","The Clot",19,597],[97,"Al-Qadr","The Decree",5,598],[98,"Al-Bayyinah","The Clear Proof",8,598],[99,"Az-Zalzalah","The Earthquake",8,599],[100,"Al-Adiyat","The Chargers",11,599],[101,"Al-Qari'ah","The Striking Hour",11,600],[102,"At-Takathur","Rivalry in Increase",8,600],[103,"Al-Asr","Time",3,601],[104,"Al-Humazah","The Slanderer",9,601],[105,"Al-Fil","The Elephant",5,601],[106,"Quraysh","Quraysh",4,602],[107,"Al-Ma'un","Small Kindnesses",7,602],[108,"Al-Kawthar","Abundance",3,602],[109,"Al-Kafirun","The Disbelievers",6,603],[110,"An-Nasr","The Help",3,603],[111,"Al-Masad","The Palm Fiber",5,603],[112,"Al-Ikhlas","Sincerity",4,604],[113,"Al-Falaq","The Daybreak",5,604],[114,"An-Nas","Mankind",6,604]];
+
+/* Motivational collection: [text, source] — all graded */
+const MOTIV=[
+["Allah is more merciful to His servants than this mother is to her child.","Bukhari & Muslim — said watching a mother find her lost baby"],
+["I am as My servant thinks of Me. If he remembers Me in himself, I remember him in Myself.","Bukhari & Muslim — Hadith Qudsi"],
+["Wondrous is the affair of the believer, for all of it is good — and that belongs to no one but the believer. If ease reaches him he is grateful, and that is good for him; if harm reaches him he is patient, and that is good for him.","Muslim 2999"],
+["The five daily prayers are like an abundant river at your door in which you bathe five times a day.","Bukhari & Muslim"],
+["Take advantage of five before five: your youth before old age, your health before sickness, your wealth before poverty, your free time before busyness, and your life before death.","Al-Hakim — graded sahih (al-Albani)"],
+["The strong believer is better and more beloved to Allah than the weak believer, though in both there is good. Strive for what benefits you, seek Allah's help, and do not give up.","Muslim 2664"],
+["If the Hour comes while one of you has a sapling in his hand, and he is able to plant it before it arrives — let him plant it.","Ahmad — graded sahih"],
+["Whoever travels a path seeking knowledge, Allah makes easy for him a path to Paradise.","Muslim 2699"],
+["When Allah wills good for someone, He gives him understanding of the deen.","Bukhari & Muslim"],
+["No fatigue, illness, anxiety, sorrow, harm, or sadness afflicts a Muslim — not even a thorn's prick — except that Allah expiates some of his sins by it.","Bukhari & Muslim"],
+["The greatness of the reward comes with the greatness of the trial. When Allah loves a people, He tests them.","Tirmidhi 2396 — hasan"],
+["Richness is not in having many possessions; richness is the richness of the soul.","Bukhari & Muslim"],
+["Whoever makes the Hereafter his concern, Allah places richness in his heart, gathers his scattered affairs, and the dunya comes to him despite itself.","Tirmidhi 2465 — sahih"],
+["Be mindful of Allah in times of ease, and He will know you in times of hardship.","Tirmidhi 2516 — hasan"],
+["Allah does not look at your bodies or your appearances — He looks at your hearts and your deeds.","Muslim 2564"],
+["The best of you are those who learn the Quran and teach it.","Bukhari 5027"],
+["The one who recites the Quran skillfully is with the noble, obedient angels. The one who recites while it is difficult for him, stumbling — he has a double reward.","Bukhari & Muslim"],
+["Do good deeds properly and moderately, and give glad tidings — none of you enters Paradise by deeds alone, but by Allah wrapping you in His mercy.","Bukhari & Muslim"],
+["Every son of Adam sins, and the best of those who sin are those who repent.","Tirmidhi & Ibn Majah — hasan"],
+["Allah stretches out His hand at night to forgive the one who sinned by day, and stretches out His hand by day to forgive the one who sinned by night.","Muslim 2759"],
+["Charity does not decrease wealth. Allah increases a servant in honor when he forgives. And no one humbles himself for Allah except that Allah raises him.","Muslim 2588"],
+["Whoever says SubhanAllahi wa bihamdihi one hundred times a day, his sins are erased even if they were like the foam of the sea.","Bukhari & Muslim"],
+["Paradise is surrounded by hardships, and the Fire is surrounded by desires.","Bukhari & Muslim"],
+["Make things easy and do not make them difficult; give glad tidings and do not drive people away.","Bukhari & Muslim"]];
+
+/* Reflection prompts — rotate daily */
+const PROMPTS=[
+"What blessing did you almost walk past today without noticing?",
+"Where did you control your tongue or your anger today — and where did it control you?",
+"Which prayer had the most presence today? What made the difference?",
+"If today were your last day, what would you have done differently before Maghrib?",
+"Who did you benefit today — family, patient, stranger? Who benefited you?",
+"What is one thing you're asking Allah for that you also need to work toward?",
+"What did today's hadith look like in your actual day?",
+"Which of Allah's Names did you experience today — Ar-Razzaq, Al-Latif, As-Sabur?",
+"What are you carrying that you haven't handed to Allah yet?",
+"Where did dunya pull hardest today, and what pulled back?",
+"What would your children learn from watching you today?",
+"What sin or slip needs istighfar tonight before you sleep?",
+"What did you learn today that you didn't know at Fajr?",
+"Where were you tested today — and did you respond with sabr, or react?"];
+
+/* Adhkar: [title, arabic, meaning, count, source] */
+const ADHKAR=[
+["Ayat al-Kursi (after every salah + before sleep)","اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ...","Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence... (2:255)","1x after each prayer · 1x before sleep","Quran 2:255 · after salah — Nasa'i, sahih · before sleep — Bukhari"],
+["The Three Quls (morning · evening · before sleep)","قُلْ هُوَ اللَّهُ أَحَدٌ · قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ · قُلْ أَعُوذُ بِرَبِّ النَّاسِ","Al-Ikhlas, al-Falaq, an-Nas — the Prophet ﷺ said they suffice you against all things. Al-Falaq shields against the envier.","3x each, morning and evening","Abu Dawud 5082, Tirmidhi 3575 — sahih/hasan"],
+["Protection of the day","بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ","In the name of Allah, with whose name nothing on earth or in heaven can harm, and He is the All-Hearing, All-Knowing.","3x morning · 3x evening","Abu Dawud 5088, Tirmidhi 3388 — sahih"],
+["For your children","أُعِيذُكُمَا بِكَلِمَاتِ اللَّهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ","I seek refuge for you in Allah's perfect words from every devil, harmful creature, and envious eye.","Over each child, morning or before school","Bukhari 3371 — Ibrahim used it for Ismail and Ishaq"],
+["When admiring a blessing","اللَّهُمَّ بَارِكْ","'Allahumma barik' — O Allah, bless it. The prescribed sunnah: when you see something pleasing in yourself, your wealth, or your brother, pray for blessing upon it, for the eye is real. Also from Quran 18:39: 'MashaAllah, la quwwata illa billah.'","Whenever admiration strikes","Ahmad, Ibn Majah 3509 — sahih (Sahl ibn Hunayf) · Quran 18:39"],
+["When wronged or anxious","حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ","Allah is sufficient for us, and He is the best Disposer of affairs — said by Ibrahim in the fire and the Prophet ﷺ when threatened.","Whenever the chest tightens","Quran 3:173 · Bukhari 4563"],
+["Morning gratitude","اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ","O Allah, whatever blessing reached me or any of Your creation this morning is from You alone, no partner to You — so to You is all praise and thanks. Whoever says it has fulfilled the day's gratitude.","1x morning · 1x evening (amsa)","Abu Dawud 5073 — graded hasan"],
+["Sayyid al-Istighfar — the master of seeking forgiveness","اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ...","O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am Your servant... Whoever says it with conviction in the day and dies before evening enters Paradise.","1x morning · 1x evening","Bukhari 6306"]];
+
+const TASKS=[["fajr","Fajr","before sunrise"],["dhuhr","Dhuhr",""],["asr","Asr",""],["maghrib","Maghrib",""],["isha","Isha",""],["madhkar","Morning adhkar","the Fortress below"],["eadhkar","Evening adhkar","before Maghrib–Isha"],["quran","Quran — today's portion","track it on the Quran tab"],["lesson","Today's hadith lesson","read it, apply the action"],["journal","Journal entry","shukr + muhasabah on the Journal tab"]];
+
+/* ================= APP LOGIC ================= */
+const $=id=>document.getElementById(id);
+const todayKey=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const dayOfYear=()=>{const d=new Date();return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)};
+const pageToJuz=p=>p<=21?1:Math.min(30,Math.floor((p-2)/20)+1);
+const surahAtPage=p=>{let s=SURAHS[0];for(const x of SURAHS){if(x[4]<=p)s=x;else break}return s};
+const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* ---- state ---- */
+let day={c:{},j:null};                 // per-day: checks + journal
+let main={streak:{count:0,last:null},quran:{page:1,bookmarks:[]},hifz:[],duas:[]};
+
+async function sGet(k){try{const r=await window.storage.get(k);return r&&r.value?JSON.parse(r.value):null}catch(e){return null}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch(e){console.error("storage",e)}}
+const saveDay=()=>sSet("deen2:d:"+todayKey(),day);
+const saveMain=()=>sSet("deen2:main",main);
+function toast(msg){const t=$("toast");t.textContent=msg||"Saved ✓";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600)}
+
+/* ---- header ---- */
+function renderDate(){
+  const d=new Date();
+  $("dateLine").textContent=d.toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  try{$("hijriLine").textContent=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura",{day:"numeric",month:"long",year:"numeric"}).format(d)+" AH";}
+  catch(e){$("hijriLine").textContent=""}
+}
+
+/* ---- today: lesson, motivation, name ---- */
+function renderDaily(){
+  const h=HADITH[dayOfYear()%HADITH.length];
+  $("hNum").textContent="Hadith "+h[0]+" of 42";
+  $("hTitle").textContent=h[1];
+  $("hText").textContent="\u201C"+h[2]+"\u201D";
+  $("hLesson").textContent=h[3];
+  $("hAction").textContent=h[4];
+  $("hSource").textContent="Source: "+SOURCES[h[0]-1];
+  const m=MOTIV[dayOfYear()%MOTIV.length];
+  $("mText").textContent="\u201C"+m[0]+"\u201D";
+  $("mSrc").textContent=m[1];
+  const n=NAMES[dayOfYear()%NAMES.length];
+  $("nAr").textContent=n[0];$("nTr").textContent=n[1];$("nMn").textContent=n[2];
+  $("jPrompt").textContent=PROMPTS[dayOfYear()%PROMPTS.length];
+}
+
+/* ---- checklist + streak ---- */
+function countDone(){return TASKS.filter(t=>day.c[t[0]]).length}
+function renderChecklist(){
+  const grid=$("checkGrid");grid.innerHTML="";
+  TASKS.forEach(t=>{
+    const el=document.createElement("div");
+    el.className="check"+(day.c[t[0]]?" done":"");
+    el.setAttribute("role","checkbox");el.setAttribute("aria-checked",!!day.c[t[0]]);el.tabIndex=0;
+    el.innerHTML='<div class="box">✓</div><div class="lbl">'+t[1]+(t[2]?'<span class="sub">'+t[2]+'</span>':'')+'</div>';
+    const toggle=async()=>{day.c[t[0]]=!day.c[t[0]];await saveDay();await updateStreak();renderChecklist()};
+    el.addEventListener("click",toggle);
+    el.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();toggle()}});
+    grid.appendChild(el);
+  });
+  const c=countDone(),total=TASKS.length,note=$("progressNote");
+  if(c===total){note.textContent="✓ Day complete — may Allah accept it.";note.className="progress-note complete"}
+  else{note.textContent=c+" of "+total+" — small and consistent.";note.className="progress-note"}
+  $("ringFill").style.strokeDashoffset=201-(201*c/total);
+  $("streakNum").textContent=main.streak.count;
+}
+async function updateStreak(){
+  const t=todayKey();
+  const y=new Date();y.setDate(y.getDate()-1);
+  const yk=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  if(countDone()===TASKS.length){
+    if(main.streak.last!==t){main.streak.count=(main.streak.last===yk)?main.streak.count+1:1;main.streak.last=t;await saveMain()}
+  }else if(main.streak.last===t){
+    main.streak.count=Math.max(0,main.streak.count-1);
+    main.streak.last=main.streak.count>0?yk:null;await saveMain();
+  }
+}
+
+/* ---- adhkar ---- */
+function renderAdhkar(){
+  $("adhkarList").innerHTML=ADHKAR.map(a=>
+    '<details><summary>'+esc(a[0])+'</summary><div class="dbody">'+
+    '<div class="ar">'+a[1]+'</div><div class="meaning">'+esc(a[2])+'</div>'+
+    '<div class="count">'+esc(a[3])+'</div>'+
+    '<div class="meaning" style="margin-top:8px">Source: '+esc(a[4])+'</div></div></details>').join("");
+}
+
+/* ---- quran tab ---- */
+function renderQuran(){
+  const p=main.quran.page;
+  $("qPage").textContent=p;
+  $("qJuz").textContent=pageToJuz(p);
+  $("qPct").textContent=Math.floor(p/604*100)+"%";
+  $("qBarFill").style.width=(p/604*100)+"%";
+  const s=surahAtPage(p);
+  $("qSurahNow").textContent="You are in Surah "+s[1]+" ("+s[2]+") — "+s[3]+" ayat.";
+  const ppd=parseInt($("kPPD").value),remaining=604-p,days=Math.ceil(remaining/ppd);
+  const fin=new Date();fin.setDate(fin.getDate()+days);
+  $("kResult").textContent="→ khatmah in "+days+" days ("+fin.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+"), inshaAllah";
+}
+async function setPage(p){main.quran.page=Math.min(604,Math.max(1,p));await saveMain();renderQuran()}
+function renderBookmarks(){
+  const list=$("bmList"),bms=main.quran.bookmarks;
+  if(!bms.length){list.innerHTML='<p class="muted">No bookmarks yet. Mark where an ayah stopped you.</p>';return}
+  list.innerHTML=bms.map((b,i)=>
+    '<div class="bm-item"><div><b style="font-size:.85rem">'+esc(b.s)+'</b> <span class="pill">p. '+b.p+'</span>'+
+    (b.n?'<div class="muted" style="margin-top:2px">'+esc(b.n)+'</div>':'')+
+    '<div class="muted" style="font-size:.68rem;margin-top:2px">'+esc(b.d)+'</div></div>'+
+    '<button class="del" data-i="'+i+'">remove</button></div>').join("");
+  list.querySelectorAll(".del").forEach(btn=>btn.addEventListener("click",async()=>{
+    main.quran.bookmarks.splice(parseInt(btn.dataset.i),1);await saveMain();renderBookmarks()}));
+}
+function renderHifz(){
+  const grid=$("surahGrid");grid.innerHTML="";
+  SURAHS.forEach(s=>{
+    const done=main.hifz.includes(s[0]);
+    const el=document.createElement("div");
+    el.className="schip"+(done?" memo":"");
+    el.innerHTML='<span class="sn">'+s[0]+'</span><br>'+esc(s[1])+'<br><span class="sn">'+s[3]+' ayat</span>';
+    el.title=s[2];
+    el.addEventListener("click",async()=>{
+      const ix=main.hifz.indexOf(s[0]);
+      if(ix>=0)main.hifz.splice(ix,1);else main.hifz.push(s[0]);
+      await saveMain();renderHifz();
+    });
+    grid.appendChild(el);
+  });
+  $("hifzCount").textContent=main.hifz.length;
+}
+
+/* ---- learn tab ---- */
+function renderLearn(){
+  $("hadithBrowser").innerHTML=HADITH.map(h=>
+    '<details><summary><span><span class="pill" style="margin-right:8px">'+h[0]+'</span>'+esc(h[1])+'</span></summary>'+
+    '<div class="dbody"><p style="font-family:Amiri,serif;font-style:italic;font-size:1.02rem;margin-top:10px">\u201C'+esc(h[2])+'\u201D</p>'+
+    '<p style="margin-top:8px">'+esc(h[3])+'</p>'+
+    '<div class="meaning" style="margin-top:8px">Source: '+esc(SOURCES[h[0]-1])+'</div></div></details>').join("");
+  $("motivBrowser").innerHTML=MOTIV.map(m=>
+    '<div class="card" style="margin-bottom:8px"><div class="mtext" style="font-family:Amiri,serif;font-style:italic">\u201C'+esc(m[0])+'\u201D</div>'+
+    '<div class="msrc" style="font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lapis);margin-top:6px">'+esc(m[1])+'</div></div>').join("");
+  $("namesGrid").innerHTML=NAMES.map(n=>
+    '<div class="ncell"><div class="a">'+n[0]+'</div><div class="t">'+esc(n[1])+'</div><div class="m">'+esc(n[2])+'</div></div>').join("");
+}
+
+/* ---- journal ---- */
+function loadJournalUI(){
+  const j=day.j||{g:["","",""],r:"",f:""};
+  $("g1").value=j.g[0]||"";$("g2").value=j.g[1]||"";$("g3").value=j.g[2]||"";
+  $("jReflect").value=j.r||"";$("jFree").value=j.f||"";
+}
+async function saveJournal(){
+  day.j={g:[$("g1").value,$("g2").value,$("g3").value],r:$("jReflect").value,f:$("jFree").value};
+  const has=day.j.g.some(x=>x.trim())||day.j.r.trim()||day.j.f.trim();
+  if(has&&!day.c.journal){day.c.journal=true}
+  await saveDay();await updateStreak();renderChecklist();toast();renderHistory();
+}
+function renderDuas(){
+  const el=$("duaList");
+  if(!main.duas.length){el.innerHTML='<p class="muted">Add the du\u2019as you will not stop making.</p>';return}
+  el.innerHTML=main.duas.map((d,i)=>'<div class="dua-item"><span>'+esc(d)+'</span><button class="del" style="background:none;border:none;color:var(--rose);font-size:.72rem" data-i="'+i+'">remove</button></div>').join("");
+  el.querySelectorAll(".del").forEach(b=>b.addEventListener("click",async()=>{main.duas.splice(parseInt(b.dataset.i),1);await saveMain();renderDuas()}));
+}
+async function renderHistory(){
+  try{
+    const r=await window.storage.list("deen2:d:");
+    if(!r||!r.keys||!r.keys.length){return}
+    const keys=r.keys.map(k=>typeof k==="string"?k:k.key).filter(k=>k!=="deen2:d:"+todayKey()).sort().reverse().slice(0,14);
+    if(!keys.length)return;
+    const el=$("histList");el.innerHTML="";
+    for(const k of keys){
+      const date=k.replace("deen2:d:","");
+      const item=document.createElement("div");item.className="hist-item";
+      item.innerHTML='<div class="hd">'+date+' <span class="muted" style="font-size:.72rem">tap to view</span></div><div class="hist-body" style="display:none"></div>';
+      item.addEventListener("click",async()=>{
+        const body=item.querySelector(".hist-body");
+        if(body.style.display==="none"){
+          const d=await sGet(k);let txt="";
+          if(d&&d.j){
+            const g=(d.j.g||[]).filter(x=>x&&x.trim());
+            if(g.length)txt+="Shukr: "+g.join(" · ")+"\n";
+            if(d.j.r)txt+="Reflection: "+d.j.r+"\n";
+            if(d.j.f)txt+=d.j.f;
+          }
+          const done=d&&d.c?Object.values(d.c).filter(Boolean).length:0;
+          body.textContent=(txt||"(no journal written)")+"\n— "+done+"/"+TASKS.length+" practices completed";
+          body.style.display="block";
+        }else body.style.display="none";
+      });
+      el.appendChild(item);
+    }
+  }catch(e){/* history unavailable */}
+}
+
+/* ---- tabs ---- */
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");$("tab-"+b.dataset.tab).classList.add("active");
+  window.scrollTo({top:0});
+}));
+
+/* ---- wire controls ---- */
+$("qPlus").addEventListener("click",()=>setPage(main.quran.page+1));
+$("qMinus").addEventListener("click",()=>setPage(main.quran.page-1));
+$("qSetBtn").addEventListener("click",()=>{const v=parseInt($("qSet").value);if(v)setPage(v)});
+$("kPPD").addEventListener("change",renderQuran);
+$("bmAdd").addEventListener("click",async()=>{
+  const s=SURAHS[parseInt($("bmSurah").value)];
+  main.quran.bookmarks.unshift({s:s[1],p:s[4],n:$("bmNote").value.trim(),d:todayKey()});
+  $("bmNote").value="";await saveMain();renderBookmarks();toast("Bookmark saved ✓");
+});
+$("jSave").addEventListener("click",saveJournal);
+$("duaAdd").addEventListener("click",async()=>{
+  const v=$("duaNew").value.trim();if(!v)return;
+  main.duas.push(v);$("duaNew").value="";await saveMain();renderDuas();
+});
+
+/* ---- init ---- */
+(async function init(){
+  renderDate();renderDaily();renderAdhkar();renderLearn();
+  $("bmSurah").innerHTML=SURAHS.map((s,i)=>'<option value="'+i+'">'+s[0]+'. '+esc(s[1])+' (p.'+s[4]+')</option>').join("");
+  const d=await sGet("deen2:d:"+todayKey());if(d)day=d;
+  const m=await sGet("deen2:main");if(m){main=Object.assign(main,m);main.streak=m.streak||main.streak;main.quran=Object.assign({page:1,bookmarks:[]},m.quran);main.hifz=m.hifz||[];main.duas=m.duas||[]}
+  renderChecklist();renderQuran();renderBookmarks();renderHifz();loadJournalUI();renderDuas();renderHistory();
+})();
+</script>
+</body>
+</html>
