@@ -43,6 +43,20 @@ See [`CLAUDE.md`](CLAUDE.md) for the non-negotiable content integrity rules.
   (same keys, same JSON shapes)
 - Tests: Vitest
 
+## On your phone
+
+The app is hosted at **https://omarfx8181-beep.github.io/deen-daily/** and
+installs like a native app:
+
+- **iPhone (Safari):** open the link → Share button → **Add to Home Screen**.
+- **Android (Chrome):** open the link → you'll be prompted to **Install app**
+  (or menu ⋮ → Add to Home screen).
+
+Once installed it opens full-screen with its own icon, works fully offline,
+and keeps all your data (streaks, checklists, journal) on the device —
+nothing is sent anywhere. Every merge to `main` deploys the latest version
+automatically; the installed app picks updates up on next launch.
+
 ## Getting started
 
 ```sh
