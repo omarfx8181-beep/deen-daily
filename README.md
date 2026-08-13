@@ -86,3 +86,10 @@ npm run extract:content # regenerate src/data/content.js from the prototype
 Local-first. Offline-capable. Zero login. Privacy is a feature. No accounts,
 no social features, no ads ever, no analytics beyond crash reports, and no
 AI-generated religious content at runtime.
+
+## License
+
+[MIT](LICENSE). If you reuse the religious content (hadith and adhkar
+renderings, du'as, the Names), please keep the renderings verbatim with their
+sources and gradings intact — see [`CLAUDE.md`](CLAUDE.md) — and verify full
+texts at sunnah.com.
