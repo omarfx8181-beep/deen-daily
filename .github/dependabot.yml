@@ -1,0 +1,15 @@
+# Weekly dependency updates as pull requests, so supply-chain updates are
+# reviewable and gated by CI (content check + tests) before they can land.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm-dependencies:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

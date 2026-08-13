@@ -22,7 +22,8 @@ Copied verbatim from `DEEN-APP-SPEC.md` — these are permanent project rules:
   `npm run extract:content` (`scripts/extract-content.mjs`), never edited by hand,
   never reformatted, never touched by a formatter or linter.
 - `npm run verify:content` must pass (zero diffs, exit 0) before any commit that
-  touches `src/data/`.
+  touches `src/data/`. CI runs the same check on every pull request and branch
+  push, and the Pages deploy is blocked if it fails.
 - Typographic quotes around quoted hadith text are added at render time (as the
   prototype does) — never baked into the data.
 

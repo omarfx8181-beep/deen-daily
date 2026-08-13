@@ -1,0 +1,32 @@
+name: CI
+
+# Gate for every change BEFORE it reaches main: the content integrity check,
+# unit tests, and a full build must pass on every pull request and every
+# branch push. (Pushes to main are covered by the deploy workflow, which runs
+# the same gates.)
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Character-by-character religious-content check — any diff fails CI.
+      - run: npm run verify:content
+      - run: npm test
+      - run: npm run build
