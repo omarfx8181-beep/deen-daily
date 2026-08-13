@@ -3,9 +3,10 @@ import './styles/app.css'
 import Header from './components/Header'
 import TabNav, { type TabId } from './components/TabNav'
 import Footer from './components/Footer'
-import Placeholder from './components/Placeholder'
 import TodayTab from './tabs/TodayTab'
 import QuranTab from './tabs/QuranTab'
+import LearnTab from './tabs/LearnTab'
+import JournalTab from './tabs/JournalTab'
 
 export default function App() {
   const [tab, setTab] = useState<TabId>('today')
@@ -23,8 +24,8 @@ export default function App() {
         <div className="tab active" key={tab}>
           {tab === 'today' && <TodayTab />}
           {tab === 'quran' && <QuranTab onToast={showToast} />}
-          {tab === 'learn' && <Placeholder title="Learn" />}
-          {tab === 'journal' && <Placeholder title="Journal" />}
+          {tab === 'learn' && <LearnTab />}
+          {tab === 'journal' && <JournalTab onToast={showToast} />}
         </div>
         <Footer />
       </div>
