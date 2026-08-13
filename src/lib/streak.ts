@@ -3,10 +3,15 @@
 // last completed day, otherwise restarts at 1). Un-checking after today was
 // counted decrements and rolls `last` back.
 
+import { TASKS } from '../data/content'
+
 export interface Streak {
   count: number
   last: string | null
 }
+
+export const countDone = (checks: Record<string, boolean>) =>
+  TASKS.filter((t) => checks[t[0]]).length
 
 export function updateStreak(
   streak: Streak,

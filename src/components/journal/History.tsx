@@ -3,7 +3,7 @@ import { TASKS } from '../../data/content'
 import { todayKey } from '../../lib/dates'
 import { DAY_PREFIX, sGet, sList, type DayLog } from '../../lib/storage'
 
-export default function History({ refreshKey }: { refreshKey: number }) {
+export default function History({ refreshKey }: { refreshKey: string }) {
   const [keys, setKeys] = useState<string[]>([])
   const [open, setOpen] = useState<Record<string, string>>({})
 
