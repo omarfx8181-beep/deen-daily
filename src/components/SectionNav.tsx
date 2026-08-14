@@ -3,7 +3,9 @@ export default function SectionNav({ items }: { items: { label: string; id: stri
     const el = document.getElementById(id)
     if (!el) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    // 'instant' (not 'auto') so the CSS html{scroll-behavior:smooth} cannot
+    // override the reduced-motion preference.
+    el.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth', block: 'start' })
   }
   return (
     <div className="section-nav">
