@@ -1,11 +1,18 @@
-import { HADITH, SOURCES } from '../../data/content'
+import { SOURCES } from '../../data/content'
+import type { Hadith } from '../../data/content'
 
-export default function HadithBrowser() {
+export default function HadithBrowser({
+  items,
+  filtered = false,
+}: {
+  items: Hadith[]
+  filtered?: boolean
+}) {
   return (
     <section>
-      <h2>Nawawi's Forty — Browse All</h2>
+      <h2>Nawawi's Forty{filtered ? ` — ${items.length} match${items.length === 1 ? '' : 'es'}` : ' — Browse All'}</h2>
       <div>
-        {HADITH.map((h) => (
+        {items.map((h) => (
           <details key={h[0]}>
             <summary>
               <span>

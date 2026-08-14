@@ -17,7 +17,7 @@ export default function ReadingTracker({
   fin.setDate(fin.getDate() + days)
   const finStr = fin.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   return (
-    <section style={{ marginTop: 16 }}>
+    <section style={{ marginTop: 16 }} id="tracker">
       <h2>Reading Tracker</h2>
       <div className="qstat">
         <div className="card">

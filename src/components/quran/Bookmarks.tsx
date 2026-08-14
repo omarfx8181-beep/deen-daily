@@ -14,7 +14,7 @@ export default function Bookmarks({
   const [surahIx, setSurahIx] = useState('0')
   const [note, setNote] = useState('')
   return (
-    <section>
+    <section id="bookmarks">
       <h2>Bookmarks</h2>
       <div className="qrow">
         <select value={surahIx} onChange={(e) => setSurahIx(e.target.value)}>

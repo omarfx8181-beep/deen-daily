@@ -4,7 +4,7 @@
 
 export default function HifzGuide() {
   return (
-    <section>
+    <section id="method">
       <h2>How to Memorize — The Method</h2>
       <div>
         <details open>

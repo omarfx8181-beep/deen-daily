@@ -2,6 +2,7 @@ import { SURAHS } from '../data/content'
 import { todayKey } from '../lib/dates'
 import { clampPage } from '../lib/quran'
 import type { MainState } from '../lib/storage'
+import SectionNav from '../components/SectionNav'
 import ReadingTracker from '../components/quran/ReadingTracker'
 import Bookmarks from '../components/quran/Bookmarks'
 import HifzGrid from '../components/quran/HifzGrid'
@@ -18,6 +19,14 @@ export default function QuranTab({
 }) {
   return (
     <>
+      <SectionNav
+        items={[
+          { label: 'Tracker', id: 'tracker' },
+          { label: 'Bookmarks', id: 'bookmarks' },
+          { label: 'Hifz', id: 'hifz' },
+          { label: 'Method', id: 'method' },
+        ]}
+      />
       <ReadingTracker
         page={main.quran.page}
         onSetPage={(p) => onUpdateMain({ ...main, quran: { ...main.quran, page: clampPage(p) } })}

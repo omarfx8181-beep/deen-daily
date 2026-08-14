@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './styles/app.css'
+import './styles/additions.css'
 import Header from './components/Header'
 import TabNav, { type TabId } from './components/TabNav'
 import Footer from './components/Footer'

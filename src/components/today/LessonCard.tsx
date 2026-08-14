@@ -3,7 +3,7 @@ import { HADITH, SOURCES } from '../../data/content'
 export default function LessonCard({ dayIndex }: { dayIndex: number }) {
   const h = HADITH[dayIndex % HADITH.length]
   return (
-    <div className="mihrab">
+    <div className="mihrab" id="lesson">
       <div className="eyebrow">Today's Lesson · Nawawi's Forty</div>
       <div className="hnum">Hadith {h[0]} of 42</div>
       <div className="htitle">{h[1]}</div>
