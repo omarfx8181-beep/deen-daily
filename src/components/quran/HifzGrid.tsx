@@ -8,7 +8,7 @@ export default function HifzGrid({
   onToggle: (surahNumber: number) => void
 }) {
   return (
-    <section>
+    <section id="hifz">
       <h2>Hifz — Memorization</h2>
       <p className="muted" style={{ marginBottom: 10 }}>
         <span>{hifz.length}</span> of 114 surahs memorized · tap a surah to toggle

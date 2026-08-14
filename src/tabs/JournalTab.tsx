@@ -18,7 +18,7 @@ export default function JournalTab({
 }) {
   return (
     <>
-      <TodayJournal journal={day.j} onSave={onSaveJournal} />
+      <TodayJournal key={dateKey} journal={day.j} onSave={onSaveJournal} />
       <DuaList
         duas={main.duas}
         onAdd={(dua) => onUpdateMain({ ...main, duas: [...main.duas, dua] })}

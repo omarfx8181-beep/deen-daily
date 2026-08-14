@@ -10,7 +10,7 @@ export default function Checklist({
   const done = TASKS.filter((t) => checks[t[0]]).length
   const total = TASKS.length
   return (
-    <section>
+    <section id="practice">
       <h2>Daily Practice</h2>
       <div className="check-grid">
         {TASKS.map((t) => (

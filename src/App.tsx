@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './styles/app.css'
+import './styles/additions.css'
 import Header from './components/Header'
 import TabNav, { type TabId } from './components/TabNav'
 import Footer from './components/Footer'
@@ -12,6 +13,7 @@ import { applyJournal } from './lib/journal'
 import { countDone, updateStreak } from './lib/streak'
 import { TASKS } from './data/content'
 import {
+  defaultDay,
   loadDay,
   loadMain,
   saveDay,
@@ -46,6 +48,28 @@ export default function App() {
     }
   }, [])
 
+  // Midnight rollover: when the calendar day changes while the app stays
+  // open (PWA left running), reload the day log and re-key the journal form
+  // so the UI never shows yesterday's checks or entry as today's.
+  useEffect(() => {
+    const checkDate = () => {
+      const tk = todayKey()
+      setDateKey((prev) => {
+        if (prev === tk) return prev
+        void loadDay(tk).then(setDay)
+        return tk
+      })
+    }
+    const interval = setInterval(checkDate, 60_000)
+    document.addEventListener('visibilitychange', checkDate)
+    window.addEventListener('focus', checkDate)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', checkDate)
+      window.removeEventListener('focus', checkDate)
+    }
+  }, [])
+
   const showToast = useCallback((msg: string) => {
     clearTimeout(toastTimer.current)
     setToast({ msg, show: true })
@@ -63,7 +87,7 @@ export default function App() {
   // into the new date or earn a phantom streak.
   const commitDay = async (mutate: (d: DayLog) => DayLog) => {
     const tk = todayKey()
-    let base = day ?? { c: {}, j: null }
+    let base = day ?? defaultDay()
     if (tk !== dateKey) {
       base = await loadDay(tk)
       setDateKey(tk)

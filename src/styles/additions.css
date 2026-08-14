@@ -1,0 +1,8 @@
+/* App additions beyond the prototype (quick navigation + search).
+   Uses only the prototype's design tokens — palette, type, spacing. */
+
+.section-nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px 0 2px}
+.section-nav .pill{cursor:pointer;transition:border-color .2s}
+.section-nav .pill:hover{border-color:var(--brass)}
+.search-row{margin-top:16px}
+.no-matches{margin-top:20px;text-align:center}

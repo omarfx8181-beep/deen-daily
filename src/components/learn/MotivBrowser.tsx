@@ -1,11 +1,17 @@
-import { MOTIV } from '../../data/content'
+import type { Motiv } from '../../data/content'
 
-export default function MotivBrowser() {
+export default function MotivBrowser({
+  items,
+  filtered = false,
+}: {
+  items: Motiv[]
+  filtered?: boolean
+}) {
   return (
     <section>
-      <h2>Hope & Motivation — The Collection</h2>
+      <h2>Hope & Motivation{filtered ? ` — ${items.length} match${items.length === 1 ? '' : 'es'}` : ' — The Collection'}</h2>
       <div>
-        {MOTIV.map((m) => (
+        {items.map((m) => (
           <div className="card" style={{ marginBottom: 8 }} key={m[1] + m[0].slice(0, 24)}>
             <div className="mtext" style={{ fontFamily: 'Amiri,serif', fontStyle: 'italic' }}>
               {'“' + m[0] + '”'}

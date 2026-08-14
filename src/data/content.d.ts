@@ -16,8 +16,8 @@ export type Surah = [number, string, string, number, number]
 export type Motiv = [string, string]
 /** Muhasabah reflection prompt — rotates daily. */
 export type Prompt = string
-/** [title, arabic, meaning, count, source] */
-export type Dhikr = [string, string, string, string, string]
+/** [title, arabic, meaning, count, source, transliteration ("" when no authenticated one exists)] */
+export type Dhikr = [string, string, string, string, string, string]
 /** [id, label, sublabel] */
 export type Task = [string, string, string]
 
