@@ -71,7 +71,11 @@ if (sha(hisnRaw) !== hisnMan.sha256) {
   if (hisn.duas.length !== hisnMan.duas)
     fail(`hisn.json: ${hisn.duas.length} du'as, manifest says ${hisnMan.duas}`)
   const chapterNumbers = new Set(hisn.chapters.map((c) => c.n))
+  if (hisn.chapters.some((c) => !Number.isInteger(c.n) || c.n <= 0 || !c.title))
+    fail('hisn.json: chapter without a valid number or title')
   if (hisn.duas.some((d) => !chapterNumbers.has(d.ch))) fail('hisn.json: du’a with unknown chapter')
+  const populated = new Set(hisn.duas.map((d) => d.ch))
+  if (hisn.chapters.some((c) => !populated.has(c.n))) fail('hisn.json: chapter with no du’as')
   if (hisn.duas.some((d) => !d.ar?.trim())) fail('hisn.json: du’a with empty Arabic')
   const translits = hisn.duas.filter((d) => d.translit?.trim()).length
   if (translits !== hisnMan.withTranslit)

@@ -8,7 +8,7 @@ export default function NamesGrid({
   filtered?: boolean
 }) {
   return (
-    <section>
+    <section id="names">
       <h2>{filtered ? `The Names of Allah — ${items.length} match${items.length === 1 ? '' : 'es'}` : 'The 99 Names of Allah'}</h2>
       {!filtered && (
         <p className="muted" style={{ marginBottom: 10 }}>

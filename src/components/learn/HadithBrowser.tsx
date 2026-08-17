@@ -9,7 +9,7 @@ export default function HadithBrowser({
   filtered?: boolean
 }) {
   return (
-    <section>
+    <section id="nawawi">
       <h2>Nawawi's Forty{filtered ? ` — ${items.length} match${items.length === 1 ? '' : 'es'}` : ' — Browse All'}</h2>
       <div>
         {items.map((h) => (

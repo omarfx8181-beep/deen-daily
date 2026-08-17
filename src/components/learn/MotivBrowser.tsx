@@ -8,7 +8,7 @@ export default function MotivBrowser({
   filtered?: boolean
 }) {
   return (
-    <section>
+    <section id="motivation">
       <h2>Hope & Motivation{filtered ? ` — ${items.length} match${items.length === 1 ? '' : 'es'}` : ' — The Collection'}</h2>
       <div>
         {items.map((m) => (

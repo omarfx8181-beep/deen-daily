@@ -32,12 +32,16 @@ const TRANSLIT_MARKS = /[āīūḥṣḍṭẓġšʿʾĀĪŪḤṢḌṬẒ‘�
 
 const db = new DatabaseSync(DB, { readOnly: true })
 
+// The corpus carries one unnumbered section header ("The merit of dhikr")
+// with no du'as attached; drop chapters without a real number so every
+// chapter listed is a real, populated occasion.
 const chapters = db
   .prepare(
     'SELECT number n, title_en titleEn, title titleAr FROM chapter WHERE collection_id=? ORDER BY number',
   )
   .all(COLLECTION)
-  .map((c) => ({ n: c.n, title: (c.titleEn || '').trim(), titleAr: (c.titleAr || '').trim() }))
+  .map((c) => ({ n: Number(c.n), title: (c.titleEn || '').trim(), titleAr: (c.titleAr || '').trim() }))
+  .filter((c) => Number.isInteger(c.n) && c.n > 0)
 
 const rows = db
   .prepare(
