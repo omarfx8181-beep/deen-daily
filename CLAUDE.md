@@ -27,6 +27,22 @@ Copied verbatim from `DEEN-APP-SPEC.md` — these are permanent project rules:
 - Typographic quotes around quoted hadith text are added at render time (as the
   prototype does) — never baked into the data.
 
+## Bundled datasets beyond the prototype
+
+`public/quran/*.json` (Qur'an) and `public/data/hisn.json` (Hisn al-Muslim) are
+**generated artifacts**, never hand-edited:
+
+- Qur'an — Uthmani Arabic from the Noble Qur'an Encyclopedia (King Fahd Complex
+  text), transliteration from Tanzil, translation Saheeh International; produced
+  by `npm run generate:quran`.
+- Hisn al-Muslim — the sunnah.com corpus; produced by `npm run generate:hisn`.
+- `npm run verify:data` must pass before any commit touching them: sha256 against
+  the committed manifests, structural checks, and every surah's ayah count and
+  name cross-checked against the prototype-verified `SURAHS`. CI and the deploy
+  run it alongside `verify:content`.
+- Only add content from an authenticated, attributable source. Datasets without
+  documented provenance are rejected regardless of convenience.
+
 ## Build lane
 
 - **React + Capacitor (Option B)** — locked. Vite + React + TypeScript for the web
@@ -51,3 +67,5 @@ Copied verbatim from `DEEN-APP-SPEC.md` — these are permanent project rules:
 - `npm test` — unit tests (Vitest)
 - `npm run extract:content` — regenerate `src/data/content.js` from the prototype
 - `npm run verify:content` — character-by-character content integrity check
+- `npm run verify:data` — sha256 + structural check of the bundled datasets
+- `npm run generate:quran` / `generate:hisn` — regenerate those datasets
