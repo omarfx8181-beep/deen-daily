@@ -6,3 +6,17 @@
 .section-nav .pill:hover{border-color:var(--brass)}
 .search-row{margin-top:16px}
 .no-matches{margin-top:20px;text-align:center}
+
+/* prayer times */
+.prayer-card{margin-top:14px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:14px 18px}
+.prayer-next{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.prayer-next .pname{font-family:'Marcellus',serif;font-size:1.1rem;margin-top:2px}
+.prayer-next .ptime{text-align:right}
+.prayer-next .ptime b{font-family:'Marcellus',serif;font-size:1.25rem;color:var(--brass);display:block}
+.prayer-next .ptime span{font-size:.7rem;color:var(--slate);letter-spacing:.06em}
+.prayer-loc{width:100%;margin-top:10px;background:none;border:none;border-top:1px solid var(--line2);
+  padding:8px 0 0;color:var(--slate);font-size:.7rem;letter-spacing:.04em;text-align:left}
+.prayer-loc:hover{color:var(--moon)}
+.prayer-edit{margin-top:8px}
+.check .time{color:var(--brass);font-variant-numeric:tabular-nums}
+.check.next-prayer{border-color:var(--line)}

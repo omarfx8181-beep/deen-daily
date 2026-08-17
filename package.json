@@ -15,6 +15,7 @@
     "verify:data": "node scripts/verify-data.mjs"
   },
   "dependencies": {
+    "adhan": "^4.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

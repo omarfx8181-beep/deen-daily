@@ -3,6 +3,7 @@
 // swap to Capacitor Preferences is a drop-in with no data migration.
 
 import type { Streak } from './streak'
+import { DEFAULT_LOCATION, type GeoLocation } from './prayer'
 
 export const DAY_PREFIX = 'deen2:d:'
 export const MAIN_KEY = 'deen2:main'
@@ -30,6 +31,8 @@ export interface MainState {
   quran: { page: number; bookmarks: Bookmark[] }
   hifz: number[]
   duas: string[]
+  /** Stored on-device only; used to compute prayer times locally. */
+  location: GeoLocation
 }
 
 export async function sGet<T>(key: string): Promise<T | null> {
@@ -65,6 +68,7 @@ export const defaultMain = (): MainState => ({
   quran: { page: 1, bookmarks: [] },
   hifz: [],
   duas: [],
+  location: { ...DEFAULT_LOCATION },
 })
 
 export async function loadDay(dateKey: string): Promise<DayLog> {
@@ -86,6 +90,7 @@ export async function loadMain(): Promise<MainState> {
     main.quran = Object.assign({ page: 1, bookmarks: [] }, m.quran)
     main.hifz = m.hifz || []
     main.duas = m.duas || []
+    main.location = { ...DEFAULT_LOCATION, ...(m.location ?? {}) }
   }
   return main
 }

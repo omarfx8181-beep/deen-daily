@@ -118,6 +118,8 @@ export default function App() {
             <TodayTab
               day={day}
               streakCount={main.streak.count}
+              location={main.location}
+              onChangeLocation={(location) => commitMain({ ...main, location })}
               onToggleTask={(id) => void commitDay((d) => ({ ...d, c: { ...d.c, [id]: !d.c[id] } }))}
             />
           )}

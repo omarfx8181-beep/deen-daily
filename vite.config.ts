@@ -33,5 +33,8 @@ export default defineConfig({
   ],
   test: {
     environment: 'jsdom',
+    // Deterministic clock for date/prayer-time tests: the app's default
+    // location is in this zone, which is the realistic device case.
+    env: { TZ: 'America/Chicago' },
   },
 })

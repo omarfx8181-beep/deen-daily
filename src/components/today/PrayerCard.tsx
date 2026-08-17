@@ -1,0 +1,134 @@
+import { useEffect, useState } from 'react'
+import {
+  DEFAULT_LOCATION,
+  PRAYER_LABEL,
+  formatTime,
+  nextPrayer,
+  untilLabel,
+  type GeoLocation,
+} from '../../lib/prayer'
+
+export default function PrayerCard({
+  location,
+  onChangeLocation,
+}: {
+  location: GeoLocation
+  onChangeLocation: (loc: GeoLocation) => void
+}) {
+  const [now, setNow] = useState(() => new Date())
+  const [editing, setEditing] = useState(false)
+  const [lat, setLat] = useState(String(location.lat))
+  const [lng, setLng] = useState(String(location.lng))
+  const [label, setLabel] = useState(location.label)
+  const [geoError, setGeoError] = useState('')
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 30_000)
+    return () => clearInterval(t)
+  }, [])
+
+  const next = nextPrayer(location, now)
+
+  const save = () => {
+    const nlat = Number(lat)
+    const nlng = Number(lng)
+    if (!Number.isFinite(nlat) || Math.abs(nlat) > 90 || !Number.isFinite(nlng) || Math.abs(nlng) > 180) {
+      setGeoError('Enter a latitude between −90 and 90 and a longitude between −180 and 180.')
+      return
+    }
+    onChangeLocation({ lat: nlat, lng: nlng, label: label.trim() || 'My location' })
+    setGeoError('')
+    setEditing(false)
+  }
+
+  const useDevice = () => {
+    if (!navigator.geolocation) {
+      setGeoError('This device has no location service. Enter coordinates instead.')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLat(pos.coords.latitude.toFixed(4))
+        setLng(pos.coords.longitude.toFixed(4))
+        setGeoError('')
+      },
+      () => setGeoError('Location permission denied. Enter coordinates instead.'),
+    )
+  }
+
+  return (
+    <div className="prayer-card" id="prayers">
+      <div className="prayer-next">
+        <div>
+          <div className="eyebrow">Next prayer</div>
+          <div className="pname">
+            {PRAYER_LABEL[next.id]}
+            {next.tomorrow ? ' (tomorrow)' : ''}
+          </div>
+        </div>
+        <div className="ptime">
+          <b>{formatTime(next.time)}</b>
+          <span>in {untilLabel(next.time, now)}</span>
+        </div>
+      </div>
+      <button className="prayer-loc" onClick={() => setEditing((e) => !e)}>
+        {location.label} · {location.lat.toFixed(2)}, {location.lng.toFixed(2)} — computed on this
+        device{editing ? ' ▴' : ' ▾'}
+      </button>
+      {editing && (
+        <div className="prayer-edit">
+          <div className="qrow">
+            <input
+              type="text"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="place name"
+              aria-label="Place name"
+            />
+          </div>
+          <div className="qrow">
+            <input
+              type="number"
+              step="0.0001"
+              value={lat}
+              onChange={(e) => setLat(e.target.value)}
+              placeholder="latitude"
+              aria-label="Latitude"
+            />
+            <input
+              type="number"
+              step="0.0001"
+              value={lng}
+              onChange={(e) => setLng(e.target.value)}
+              placeholder="longitude"
+              aria-label="Longitude"
+            />
+          </div>
+          {geoError ? <p className="muted">{geoError}</p> : null}
+          <div className="qrow">
+            <button className="btn small" onClick={useDevice}>
+              Use my location
+            </button>
+            <button
+              className="btn small"
+              onClick={() => {
+                setLat(String(DEFAULT_LOCATION.lat))
+                setLng(String(DEFAULT_LOCATION.lng))
+                setLabel(DEFAULT_LOCATION.label)
+              }}
+            >
+              Reset
+            </button>
+            <button className="btn small gold" onClick={save}>
+              Save
+            </button>
+          </div>
+          <p className="muted" style={{ marginTop: 6 }}>
+            Times use the ISNA method, calculated on this device — no account, no network, and your
+            location is never sent anywhere. Shown in this device's time zone.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
