@@ -26,9 +26,21 @@ if (!DB) throw new Error('Set HADITH_DB to the hadith package hadith.db path')
 const OUT = join(root, 'public', 'data', 'hisn.json')
 const COLLECTION = 300
 
-// A paragraph is a transliteration if it carries the corpus's scholarly
-// transliteration diacritics and no sentence-style English punctuation lead.
-const TRANSLIT_MARKS = /[āīūḥṣḍṭẓġšʿʾĀĪŪḤṢḌṬẒ‘’`]/
+// A paragraph is the transliteration only if it carries the corpus's scholarly
+// transliteration letters (macrons / under-dots). Curly quotes and backticks
+// are NOT evidence — they appear in ordinary English narration too, and
+// treating them as a signal labels English prose as something to recite.
+const TRANSLIT_LETTERS = /[āīūḥṣḍṭẓĀĪŪḤṢḌṬẒ]/
+// Narration markers: if the paragraph tells a story about the Prophet ﷺ or a
+// companion, it is prose, even when a transliterated du'a is embedded in it.
+const NARRATION = /\(ﷺ\)|said:|Messenger of Allah|The Prophet|used to|narrated/i
+
+const isTransliteration = (p) => {
+  if (!TRANSLIT_LETTERS.test(p)) return false
+  if (NARRATION.test(p)) return false
+  // Require several diacritic letters so a stray accented word cannot qualify.
+  return (p.match(/[āīūḥṣḍṭẓĀĪŪḤṢḌṬẒ]/g) || []).length >= 3
+}
 
 const db = new DatabaseSync(DB, { readOnly: true })
 
@@ -77,11 +89,13 @@ const duas = rows.map((r) => {
 
   let translit = ''
   let meaning = ''
-  if (body.length >= 2 && TRANSLIT_MARKS.test(body[0])) {
+  if (body.length >= 2 && isTransliteration(body[0])) {
     translit = body[0]
     meaning = body.slice(1).join('\n\n')
     withTranslit++
   } else {
+    // Mixed narration-and-transliteration, or none at all: show the whole
+    // English as the meaning rather than labelling prose "Say it".
     meaning = body.join('\n\n')
   }
   return {
@@ -94,7 +108,18 @@ const duas = rows.map((r) => {
   }
 })
 
-const payload = { source: 'Hisn al-Muslim — sunnah.com corpus, copied verbatim', chapters, duas }
+// Content integrity rule: every hadith must display its source. The corpus
+// leaves a reference off a few entries — those are dropped rather than shown
+// unsourced.
+const sourced = duas.filter((d) => d.ref.trim())
+const dropped = duas.length - sourced.length
+const keptChapters = new Set(sourced.map((d) => d.ch))
+
+const payload = {
+  source: 'Hisn al-Muslim — sunnah.com corpus, copied verbatim',
+  chapters: chapters.filter((c) => keptChapters.has(c.n)),
+  duas: sourced,
+}
 const json = JSON.stringify(payload)
 mkdirSync(dirname(OUT), { recursive: true })
 writeFileSync(OUT, json)
@@ -102,14 +127,14 @@ writeFileSync(
   join(dirname(OUT), 'hisn.manifest.json'),
   JSON.stringify({
     sha256: createHash('sha256').update(json).digest('hex'),
-    chapters: chapters.length,
-    duas: duas.length,
-    withTranslit,
+    chapters: payload.chapters.length,
+    duas: payload.duas.length,
+    withTranslit: payload.duas.filter((d) => d.translit).length,
   }),
 )
 
 console.log(
-  `Wrote ${OUT}: ${chapters.length} chapters, ${duas.length} du'as ` +
-    `(${withTranslit} with transliteration, ${duas.filter((d) => d.ar).length} with Arabic), ` +
-    `${(json.length / 1024).toFixed(0)} KB, sha256 ${createHash('sha256').update(json).digest('hex').slice(0, 16)}…`,
+  `Wrote ${OUT}: ${payload.chapters.length} chapters, ${payload.duas.length} du'as ` +
+    `(${payload.duas.filter((d) => d.translit).length} with transliteration, ` +
+    `${dropped} dropped for having no reference), ${(json.length / 1024).toFixed(0)} KB`,
 )

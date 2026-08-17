@@ -81,3 +81,27 @@ describe('formatting helpers', () => {
     expect(formatTime(new Date('2026-08-17T17:05:00Z'))).toMatch(/^\d{1,2}:\d{2}\s?(AM|PM)$/)
   })
 })
+
+describe('extreme latitudes', () => {
+  const TROMSO = { lat: 69.6492, lng: 18.9553, label: 'Tromsø' }
+
+  it('resolves every prayer above the Arctic circle in midnight sun', () => {
+    const t = timesFor(TROMSO, new Date('2026-06-21T12:00:00Z'))
+    for (const id of PRAYER_ORDER) {
+      expect(Number.isNaN(t[id].getTime()), `${id} is Invalid Date`).toBe(false)
+    }
+  })
+
+  it('resolves every prayer above the Arctic circle in polar night', () => {
+    const t = timesFor(TROMSO, new Date('2026-12-21T12:00:00Z'))
+    for (const id of PRAYER_ORDER) {
+      expect(Number.isNaN(t[id].getTime()), `${id} is Invalid Date`).toBe(false)
+    }
+  })
+
+  it('still returns a usable next prayer there', () => {
+    const n = nextPrayer(TROMSO, new Date('2026-06-21T20:00:00Z'))
+    expect(PRAYER_ORDER).toContain(n.id)
+    expect(Number.isNaN(n.time.getTime())).toBe(false)
+  })
+})

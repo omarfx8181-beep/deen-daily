@@ -36,11 +36,15 @@ export default function Reader({
     }
   }, [surah])
 
-  // Stop any playback when the surah changes or the reader unmounts.
+  // Stop any playback when the surah changes or the reader unmounts, and
+  // clear the playing/error state with it — otherwise an unrelated ayah in
+  // the new surah renders as "playing" and needs two taps to start.
   useEffect(() => {
     return () => {
       audioRef.current?.pause()
       audioRef.current = null
+      setPlaying(null)
+      setAudioError('')
     }
   }, [surah])
 

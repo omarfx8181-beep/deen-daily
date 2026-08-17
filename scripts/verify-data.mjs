@@ -77,6 +77,21 @@ if (sha(hisnRaw) !== hisnMan.sha256) {
   const populated = new Set(hisn.duas.map((d) => d.ch))
   if (hisn.chapters.some((c) => !populated.has(c.n))) fail('hisn.json: chapter with no du’as')
   if (hisn.duas.some((d) => !d.ar?.trim())) fail('hisn.json: du’a with empty Arabic')
+  // Content integrity: nothing is displayed without its source.
+  const unsourced = hisn.duas.filter((d) => !d.ref?.trim())
+  if (unsourced.length)
+    fail(`hisn.json: ${unsourced.length} du’a(s) with no reference (e.g. #${unsourced[0].n})`)
+  // A "Say it" line must be a transliteration, never English narration.
+  const badTranslit = hisn.duas.filter(
+    (d) =>
+      d.translit &&
+      (!/[āīūḥṣḍṭẓĀĪŪḤṢḌṬẒ]/.test(d.translit) ||
+        /\(ﷺ\)|said:|Messenger of Allah|The Prophet|narrated/i.test(d.translit)),
+  )
+  if (badTranslit.length)
+    fail(
+      `hisn.json: ${badTranslit.length} "Say it" line(s) look like English prose (e.g. #${badTranslit[0].n})`,
+    )
   const translits = hisn.duas.filter((d) => d.translit?.trim()).length
   if (translits !== hisnMan.withTranslit)
     fail(`hisn.json: ${translits} transliterations, manifest says ${hisnMan.withTranslit}`)

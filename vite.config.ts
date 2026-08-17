@@ -34,7 +34,11 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /\/quran\/.*\.json$/,
-            handler: 'CacheFirst',
+            // Stale-while-revalidate, not cache-first: the surah files have
+            // stable unhashed names, so a cache-first entry could never be
+            // corrected. This serves instantly from cache and refreshes in
+            // the background, so a corrected text always reaches the device.
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'deen-quran-text',
               expiration: { maxEntries: 130 },

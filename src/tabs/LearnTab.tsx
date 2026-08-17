@@ -9,7 +9,7 @@ import NamesGrid from '../components/learn/NamesGrid'
 
 export default function LearnTab() {
   const [q, setQ] = useState('')
-  const [hisnMatches, setHisnMatches] = useState(0)
+  const [hisnMatches, setHisnMatches] = useState(-1)
   const onHisnMatches = useCallback((n: number) => setHisnMatches(n), [])
   const needle = q.trim().toLowerCase()
   const has = (...fields: (string | number)[]) =>
@@ -18,8 +18,14 @@ export default function LearnTab() {
   const hadith = needle ? HADITH.filter((h) => has(h[0], h[1], h[2], h[3], h[4])) : HADITH
   const motiv = needle ? MOTIV.filter((m) => has(m[0], m[1])) : MOTIV
   const names = needle ? NAMES.filter((n) => has(n[0], n[1], n[2])) : NAMES
+  // hisnMatches is -1 until the Fortress data has loaded — never claim "no
+  // matches" before every collection has actually been searched.
   const none =
-    !!needle && hadith.length === 0 && motiv.length === 0 && names.length === 0 && hisnMatches === 0
+    !!needle &&
+    hadith.length === 0 &&
+    motiv.length === 0 &&
+    names.length === 0 &&
+    hisnMatches === 0
 
   return (
     <>

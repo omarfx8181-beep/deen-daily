@@ -22,6 +22,18 @@ export default function PrayerCard({
   const [label, setLabel] = useState(location.label)
   const [geoError, setGeoError] = useState('')
 
+  // Reopening the panel shows the location actually in effect, not the
+  // values from an edit that was abandoned.
+  const openEditor = () => {
+    if (!editing) {
+      setLat(String(location.lat))
+      setLng(String(location.lng))
+      setLabel(location.label)
+      setGeoError('')
+    }
+    setEditing((e) => !e)
+  }
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30_000)
     return () => clearInterval(t)
@@ -50,6 +62,8 @@ export default function PrayerCard({
       (pos) => {
         setLat(pos.coords.latitude.toFixed(4))
         setLng(pos.coords.longitude.toFixed(4))
+        // The old place name would now be wrong for these coordinates.
+        if (label.trim() === location.label.trim()) setLabel('My location')
         setGeoError('')
       },
       () => setGeoError('Location permission denied. Enter coordinates instead.'),
@@ -71,7 +85,7 @@ export default function PrayerCard({
           <span>in {untilLabel(next.time, now)}</span>
         </div>
       </div>
-      <button className="prayer-loc" onClick={() => setEditing((e) => !e)}>
+      <button className="prayer-loc" onClick={openEditor}>
         {location.label} · {location.lat.toFixed(2)}, {location.lng.toFixed(2)} — computed on this
         device{editing ? ' ▴' : ' ▾'}
       </button>

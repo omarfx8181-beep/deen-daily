@@ -37,6 +37,9 @@ export function loadSurah(n: number): Promise<SurahText> {
       return r.json() as Promise<SurahText>
     })
     .then((s) => {
+      // Small LRU: the service worker holds the files on disk, so memory only
+      // needs the surahs in recent use — not all 114 parsed at once.
+      if (cache.size >= 5) cache.delete(cache.keys().next().value as number)
       cache.set(n, s)
       inflight.delete(n)
       return s

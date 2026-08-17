@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { TASKS } from '../data/content'
 import { dayOfYear } from '../lib/dates'
 import { countDone } from '../lib/streak'
@@ -26,9 +27,21 @@ export default function TodayTab({
   onToggleTask: (id: string) => void
 }) {
   const dayIndex = dayOfYear()
-  const today = timesFor(location)
-  const times = Object.fromEntries(PRAYER_ORDER.map((id) => [id, formatTime(today[id])]))
-  const upcoming = nextPrayer(location)
+  // Re-render on a slow tick so the times and the "next prayer" highlight
+  // move on their own instead of freezing until some unrelated state changes.
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 30_000)
+    return () => clearInterval(t)
+  }, [])
+  const today = timesFor(location, now)
+  const times = Object.fromEntries(
+    PRAYER_ORDER.map((id) => [
+      id,
+      Number.isNaN(today[id].getTime()) ? '' : formatTime(today[id]),
+    ]),
+  )
+  const upcoming = nextPrayer(location, now)
   return (
     <>
       <StreakRing count={streakCount} done={countDone(day.c)} total={TASKS.length} />
