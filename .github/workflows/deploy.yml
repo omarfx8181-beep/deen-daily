@@ -27,6 +27,8 @@ jobs:
       # Content integrity gate — the deploy fails if any religious text
       # differs from the prototype by even one character.
       - run: npm run verify:content
+      # sha256 + structural check of the generated Qur'an / Hisn datasets.
+      - run: npm run verify:data
       - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v6
