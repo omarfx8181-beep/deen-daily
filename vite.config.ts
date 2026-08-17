@@ -25,9 +25,23 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precache everything, including the self-hosted fonts, so the
-        // installed app works fully offline.
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Precache the app shell, the self-hosted fonts and the Fortress
+        // collection so they work fully offline from first launch.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}', 'data/hisn.json'],
+        // The Qur'an is 114 files / 2.3 MB — too much to force on every
+        // install, so each surah is cached the first time it is opened and
+        // stays available offline afterwards.
+        runtimeCaching: [
+          {
+            urlPattern: /\/quran\/.*\.json$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'deen-quran-text',
+              expiration: { maxEntries: 130 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],
