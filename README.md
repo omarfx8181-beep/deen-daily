@@ -5,16 +5,19 @@ accounts, no ads, all personal data on-device.
 
 Deen Daily turns daily practice into a quiet, consistent routine:
 
-- **Today** — hijri + gregorian date, a streak ring, the daily hadith lesson
-  (Nawawi's Forty rotation with source gradings), a motivational hadith of the
-  day, the Name of Allah of the day, a 10-item practice checklist, and the
-  adhkar fortress (morning/evening protection with Arabic, meaning, counts,
-  and sources).
-- **Quran** — page tracker (604-page Madani mushaf, juz auto-computed), khatmah
-  calculator, bookmarks, hifz tracker for all 114 surahs, and a full
-  memorization method guide (sabaq/sabqi/manzil, the 10+10 technique).
+- **Today** — prayer times for your location computed on the device, hijri +
+  gregorian date, a streak ring, the daily hadith lesson (Nawawi's Forty
+  rotation with source gradings), a motivational hadith of the day, the Name of
+  Allah of the day, a 10-item practice checklist, and the adhkar fortress
+  (Arabic, a line to say it from, meaning, counts and sources).
+- **Quran** — read any surah with the Arabic, an English transliteration and the
+  translation, with per-ayah recitation and a repeat loop for memorization; page
+  tracker (604-page Madani mushaf, juz auto-computed), khatmah calculator,
+  bookmarks, hifz tracker for all 114 surahs, and a full memorization method
+  guide (sabaq/sabqi/manzil, the 10+10 technique).
 - **Learn** — a 6-layer roadmap, browsable Nawawi 42, the motivation
-  collection, and the 99 Names grid.
+  collection, the complete Hisn al-Muslim (268 du'as), and the 99 Names grid —
+  all searchable from one box.
 - **Journal** — daily gratitude (shukr), a rotating muhasabah reflection
   prompt, free writing, a persistent personal du'a list, and past-entry
   history.
@@ -34,6 +37,12 @@ extraction script, and `npm run verify:content` proves character-by-character
 equality against the prototype. Nothing religious is ever regenerated,
 paraphrased, or AI-generated. Every hadith carries its source and grading.
 See [`CLAUDE.md`](CLAUDE.md) for the non-negotiable content integrity rules.
+
+The bundled Qur'an (Uthmani text from the King Fahd Complex, Tanzil
+transliteration, Saheeh International translation) and Hisn al-Muslim
+(sunnah.com corpus) are generated artifacts guarded by `npm run verify:data`:
+sha256 manifests, structural checks, and every ayah count cross-checked against
+the prototype-verified surah metadata.
 
 ## Stack
 
@@ -76,10 +85,13 @@ npm run extract:content # regenerate src/data/content.js from the prototype
 - [ ] **Phase 2** — Quran tab: page tracker, khatmah calculator, bookmarks,
   hifz tracker, memorization guide.
 - [ ] **Phase 3** — Learn + Journal tabs.
-- [ ] **Phase 4** — Capacitor wrap; prayer times (AlAdhan API) with local
-  notifications; adhkar reminders.
-- [ ] **Later** — in-app Quran text/audio (Quran.com API v4 + EveryAyah),
-  hifz review queue, home-screen widget, khatmah goal mode.
+- [x] **Phase 4** — transliterations for the Fortress, search and quick
+  navigation.
+- [x] **Phase 5** — prayer times computed on device (ISNA), the full Qur'an with
+  per-ayah transliteration and recitation, the complete Hisn al-Muslim.
+- [ ] **Next** — Capacitor wrap for prayer and adhkar notifications; hifz review
+  queue (sabaq/sabqi/manzil from the tracker); home-screen widget; khatmah goal
+  mode.
 
 ## Principles
 

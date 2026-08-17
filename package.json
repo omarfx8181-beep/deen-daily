@@ -9,9 +9,13 @@
     "preview": "vite preview",
     "test": "vitest run",
     "extract:content": "node scripts/extract-content.mjs",
-    "verify:content": "node scripts/verify-content.mjs"
+    "verify:content": "node scripts/verify-content.mjs",
+    "generate:hisn": "node scripts/generate-hisn.mjs",
+    "generate:quran": "node scripts/generate-quran.mjs",
+    "verify:data": "node scripts/verify-data.mjs"
   },
   "dependencies": {
+    "adhan": "^4.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

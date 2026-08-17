@@ -33,6 +33,12 @@ export default function App() {
   const [main, setMain] = useState<MainState | null>(null)
   const [toast, setToast] = useState({ msg: 'Saved ✓', show: false })
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  // Which day `day` actually holds, and which day is mid-load — the rollover
+  // check reads these instead of stale closure values.
+  const dateKeyRef = useRef(dateKey)
+  const loadingRef = useRef<string | null>(null)
+  const visitedRef = useRef<Set<TabId>>(new Set())
+  dateKeyRef.current = dateKey
 
   useEffect(() => {
     let cancelled = false
@@ -51,19 +57,28 @@ export default function App() {
   // Midnight rollover: when the calendar day changes while the app stays
   // open (PWA left running), reload the day log and re-key the journal form
   // so the UI never shows yesterday's checks or entry as today's.
+  // `dateKey` is only advanced once the new day's log has actually loaded —
+  // advancing it first would leave a window where the clock says "today" but
+  // `day` still holds yesterday, and a toggle in that window would copy
+  // yesterday's checks into today and earn a phantom streak.
   useEffect(() => {
+    let cancelled = false
     const checkDate = () => {
       const tk = todayKey()
-      setDateKey((prev) => {
-        if (prev === tk) return prev
-        void loadDay(tk).then(setDay)
-        return tk
+      if (tk === dateKeyRef.current || loadingRef.current === tk) return
+      loadingRef.current = tk
+      void loadDay(tk).then((d) => {
+        loadingRef.current = null
+        if (cancelled || todayKey() !== tk) return
+        setDay(d)
+        setDateKey(tk)
       })
     }
     const interval = setInterval(checkDate, 60_000)
     document.addEventListener('visibilitychange', checkDate)
     window.addEventListener('focus', checkDate)
     return () => {
+      cancelled = true
       clearInterval(interval)
       document.removeEventListener('visibilitychange', checkDate)
       window.removeEventListener('focus', checkDate)
@@ -108,6 +123,11 @@ export default function App() {
 
   const tabClass = (id: TabId) => 'tab' + (tab === id ? ' active' : '')
   const ready = day !== null && main !== null
+  // Tabs stay mounted so drafts survive switching, but their heavy data
+  // (a surah, the Fortress collection) is only fetched once you actually
+  // open that tab — a Today-only session pays nothing for them.
+  visitedRef.current.add(tab)
+  const visited = (id: TabId) => visitedRef.current.has(id)
 
   return (
     <>
@@ -118,16 +138,18 @@ export default function App() {
             <TodayTab
               day={day}
               streakCount={main.streak.count}
+              location={main.location}
+              onChangeLocation={(location) => commitMain({ ...main, location })}
               onToggleTask={(id) => void commitDay((d) => ({ ...d, c: { ...d.c, [id]: !d.c[id] } }))}
             />
           )}
         </div>
         <div className={tabClass('quran')}>
-          {ready && <QuranTab main={main} onUpdateMain={commitMain} onToast={showToast} />}
+          {ready && visited('quran') && (
+            <QuranTab main={main} onUpdateMain={commitMain} onToast={showToast} />
+          )}
         </div>
-        <div className={tabClass('learn')}>
-          <LearnTab />
-        </div>
+        <div className={tabClass('learn')}>{visited('learn') && <LearnTab />}</div>
         <div className={tabClass('journal')}>
           {ready && (
             <JournalTab

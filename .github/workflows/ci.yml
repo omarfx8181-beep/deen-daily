@@ -28,5 +28,7 @@ jobs:
       - run: npm ci
       # Character-by-character religious-content check — any diff fails CI.
       - run: npm run verify:content
+      # sha256 + structural check of the generated Qur'an / Hisn datasets.
+      - run: npm run verify:data
       - run: npm test
       - run: npm run build
