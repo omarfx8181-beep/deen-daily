@@ -12,14 +12,21 @@
     "verify:content": "node scripts/verify-content.mjs",
     "generate:hisn": "node scripts/generate-hisn.mjs",
     "generate:quran": "node scripts/generate-quran.mjs",
-    "verify:data": "node scripts/verify-data.mjs"
+    "verify:data": "node scripts/verify-data.mjs",
+    "build:native": "DEEN_NATIVE=1 vite build",
+    "cap:sync": "npm run build:native && cap sync",
+    "cap:android": "npm run cap:sync && cap open android"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/local-notifications": "^8.3.0",
     "adhan": "^4.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.5",

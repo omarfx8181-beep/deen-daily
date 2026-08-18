@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { buildSchedule, isNative, scheduleReminders } from '../../lib/notifications'
 import {
   DEFAULT_LOCATION,
   PRAYER_LABEL,
@@ -21,6 +22,12 @@ export default function PrayerCard({
   const [lng, setLng] = useState(String(location.lng))
   const [label, setLabel] = useState(location.label)
   const [geoError, setGeoError] = useState('')
+  const [native, setNative] = useState(false)
+  const [remindState, setRemindState] = useState('')
+
+  useEffect(() => {
+    void isNative().then(setNative)
+  }, [])
 
   // Reopening the panel shows the location actually in effect, not the
   // values from an edit that was abandoned.
@@ -141,6 +148,36 @@ export default function PrayerCard({
             Times use the ISNA method, calculated on this device — no account, no network, and your
             location is never sent anywhere. Shown in this device's time zone.
           </p>
+          <div className="qrow" style={{ marginTop: 8 }}>
+            {native ? (
+              <button
+                className="btn small"
+                onClick={async () => {
+                  const r = await scheduleReminders(location)
+                  setRemindState(
+                    r.status === 'scheduled'
+                      ? `Reminders set for the next 7 days (${r.count}).`
+                      : r.status === 'denied'
+                        ? 'Notifications are turned off for Deen Daily in your device settings.'
+                        : 'Reminders could not be set on this device.',
+                  )
+                }}
+              >
+                Remind me for prayers &amp; adhkar
+              </button>
+            ) : (
+              <p className="muted">
+                Prayer and adhkar reminders need the installed app build — a web page cannot wake
+                your phone reliably. The next {buildSchedule(location).length} reminders are ready
+                and will start as soon as you run the app build.
+              </p>
+            )}
+          </div>
+          {remindState ? (
+            <p className="muted" style={{ marginTop: 4 }}>
+              {remindState}
+            </p>
+          ) : null}
         </div>
       )}
     </div>

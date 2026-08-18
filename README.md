@@ -66,6 +66,23 @@ and keeps all your data (streaks, checklists, journal) on the device —
 nothing is sent anywhere. Every merge to `main` deploys the latest version
 automatically; the installed app picks updates up on next launch.
 
+## Build the phone app (prayer & adhkar reminders)
+
+The web app cannot reliably wake your phone, so **notifications need the
+native build**. The Android project is committed and ready:
+
+```sh
+npm run cap:android     # builds the web app, syncs it, opens Android Studio
+```
+
+Then press Run in Android Studio with a device attached. Requirements:
+Android Studio (with the Android SDK) for Android; for iOS, add the platform
+once with `npx cap add ios` and open it with `npx cap open ios` on a Mac with
+Xcode. Once installed, open the location panel on Today and tap
+**Remind me for prayers & adhkar** — the next seven days of prayer times plus
+the two adhkar reminders (after Fajr, before Maghrib) are scheduled on the
+device, offline.
+
 ## Getting started
 
 ```sh
@@ -89,9 +106,9 @@ npm run extract:content # regenerate src/data/content.js from the prototype
   navigation.
 - [x] **Phase 5** — prayer times computed on device (ISNA), the full Qur'an with
   per-ayah transliteration and recitation, the complete Hisn al-Muslim.
-- [ ] **Next** — Capacitor wrap for prayer and adhkar notifications; hifz review
-  queue (sabaq/sabqi/manzil from the tracker); home-screen widget; khatmah goal
-  mode.
+- [x] **Phase 6** — daily hifz review queue (sabaq/sabqi/manzil) and the
+  Capacitor native build with prayer and adhkar notifications.
+- [ ] **Next** — home-screen widget, khatmah goal mode, journal export.
 
 ## Principles
 
