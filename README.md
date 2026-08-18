@@ -46,9 +46,10 @@ the prototype-verified surah metadata.
 
 ## Stack
 
-- **React + TypeScript + Vite** (web app, this phase)
-- **Capacitor** (native iOS/Android wrap, later phase)
-- Persistence: `localStorage` now, swappable for Capacitor Preferences later
+- **React + TypeScript + Vite** (web app)
+- **Capacitor** (native Android/iOS shell, for notifications)
+- Prayer times: `adhan`, computed on device — no API, no network
+- Persistence: `localStorage`, swappable for Capacitor Preferences
   (same keys, same JSON shapes)
 - Tests: Vitest
 
@@ -91,7 +92,9 @@ npm run dev             # dev server
 npm test                # unit tests
 npm run build           # type-check + production build
 npm run verify:content  # character-by-character content integrity check
+npm run verify:data     # sha256 + structural check of the bundled datasets
 npm run extract:content # regenerate src/data/content.js from the prototype
+npm run cap:android     # build + sync + open the native Android project
 ```
 
 ## Roadmap
@@ -99,9 +102,9 @@ npm run extract:content # regenerate src/data/content.js from the prototype
 - [x] **Phase 1** — React scaffold, all content arrays extracted verbatim with
   a verification gate, Today tab (lesson, motivation, name of the day,
   checklist, adhkar fortress) with persistence and streak logic.
-- [ ] **Phase 2** — Quran tab: page tracker, khatmah calculator, bookmarks,
+- [x] **Phase 2** — Quran tab: page tracker, khatmah calculator, bookmarks,
   hifz tracker, memorization guide.
-- [ ] **Phase 3** — Learn + Journal tabs.
+- [x] **Phase 3** — Learn + Journal tabs.
 - [x] **Phase 4** — transliterations for the Fortress, search and quick
   navigation.
 - [x] **Phase 5** — prayer times computed on device (ISNA), the full Qur'an with
