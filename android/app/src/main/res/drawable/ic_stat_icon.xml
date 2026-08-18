@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar notification mark: the mihrab arch, white silhouette as
+     Android requires (it is tinted by iconColor at display time). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,2.5c-3.6,0 -6.2,2.9 -6.2,7v11.9h12.4V9.5c0,-4.1 -2.6,-7 -6.2,-7zM12,4.4c2.5,0 4.3,2 4.3,5.1v10h-8.6v-10c0,-3.1 1.8,-5.1 4.3,-5.1z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,9.2m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+</vector>

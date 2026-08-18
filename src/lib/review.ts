@@ -37,8 +37,11 @@ export function buildReview(
   if (memorized.length === 0) return { sabaq: null, sabqi: [], manzil: [], undated: 0 }
 
   // Newest first; entries with no date sort last and never become sabaq.
+  // A date that cannot be parsed is treated as no date at all — consistent
+  // with daysBetween, and it stops a corrupt entry becoming today's sabaq
+  // through an inconsistent (NaN) sort comparison.
   const dated = memorized
-    .filter((n) => log[String(n)])
+    .filter((n) => !Number.isNaN(asUtc(log[String(n)] ?? '')))
     .sort((a, b) => asUtc(log[String(b)]) - asUtc(log[String(a)]) || a - b)
 
   const sabaq = dated[0] ?? null
@@ -60,6 +63,6 @@ export function buildReview(
     sabaq,
     sabqi,
     manzil,
-    undated: memorized.filter((n) => !log[String(n)]).length,
+    undated: memorized.filter((n) => Number.isNaN(asUtc(log[String(n)] ?? ''))).length,
   }
 }

@@ -17,13 +17,17 @@ export default function TodayTab({
   day,
   streakCount,
   location,
+  reminders,
   onChangeLocation,
+  onChangeReminders,
   onToggleTask,
 }: {
   day: DayLog
   streakCount: number
   location: GeoLocation
+  reminders: boolean
   onChangeLocation: (loc: GeoLocation) => void
+  onChangeReminders: (on: boolean) => void
   onToggleTask: (id: string) => void
 }) {
   const dayIndex = dayOfYear()
@@ -55,7 +59,12 @@ export default function TodayTab({
           { label: 'Fortress', id: 'fortress' },
         ]}
       />
-      <PrayerCard location={location} onChangeLocation={onChangeLocation} />
+      <PrayerCard
+        location={location}
+        reminders={reminders}
+        onChangeLocation={onChangeLocation}
+        onChangeReminders={onChangeReminders}
+      />
       <LessonCard dayIndex={dayIndex} />
       <MotivCard dayIndex={dayIndex} />
       <NameCard dayIndex={dayIndex} />

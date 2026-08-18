@@ -112,3 +112,17 @@ describe('buildReview', () => {
     expect(q.manzil).toHaveLength(3)
   })
 })
+
+describe('corrupt hifzLog entries', () => {
+  it('never lets an unparseable date become the sabaq', () => {
+    const q = buildReview(
+      [3, 5, 9],
+      { '3': 'garbage', '5': '2026-01-01', '9': '2026-12-01' },
+      '2026-12-05',
+      0,
+    )
+    expect(q.sabaq).toBe(9)
+    expect(q.manzil).toContain(3)
+    expect(q.undated).toBe(1)
+  })
+})

@@ -70,3 +70,41 @@ describe('scheduleReminders on the web', () => {
     })
   })
 })
+
+describe('daylight saving transitions', () => {
+  // The suite runs in America/Chicago (vite.config.ts), so these are real
+  // transitions: 2027-03-14 springs forward, 2026-11-01 falls back.
+  const days = (from: string) =>
+    [...new Set(
+      buildSchedule(DEFAULT_LOCATION, new Date(from), 7).map((n) =>
+        n.at.toLocaleDateString('en-CA'),
+      ),
+    )].sort()
+
+  it('covers the day the clocks go forward instead of skipping it', () => {
+    expect(days('2027-03-13T23:30:00-06:00')).toContain('2027-03-14')
+  })
+
+  it('never schedules two reminders at the same instant when clocks go back', () => {
+    const s = buildSchedule(DEFAULT_LOCATION, new Date('2026-11-01T00:30:00-05:00'), 7)
+    const stamps = s.map((n) => n.at.getTime())
+    expect(new Set(stamps).size).toBe(stamps.length)
+    expect(s.filter((n) => n.at.toLocaleDateString('en-CA') === '2026-11-01').length).toBeLessThanOrEqual(7)
+  })
+
+  it('covers consecutive days with no gap across a transition', () => {
+    for (const start of [
+      '2026-08-17T09:00:00Z',
+      '2027-03-13T23:30:00-06:00',
+      '2026-11-01T00:30:00-05:00',
+    ]) {
+      const covered = days(start)
+      for (let i = 1; i < covered.length; i++) {
+        const prev = new Date(`${covered[i - 1]}T12:00:00Z`).getTime()
+        const cur = new Date(`${covered[i]}T12:00:00Z`).getTime()
+        expect(Math.round((cur - prev) / 86_400_000), `gap after ${covered[i - 1]} (from ${start})`).toBe(1)
+      }
+      expect(covered.length, `from ${start}`).toBeGreaterThanOrEqual(6)
+    }
+  })
+})

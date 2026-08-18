@@ -41,7 +41,11 @@ export function buildSchedule(
   const out: ScheduledNotification[] = []
 
   for (let offset = 0; offset < days; offset++) {
-    const date = new Date(now.getTime() + offset * 86_400_000)
+    // Step the local CALENDAR date, not a fixed 24h of milliseconds: across a
+    // daylight-saving change a fixed offset skips a day entirely (spring
+    // forward) or covers one twice (fall back). Noon keeps us clear of the
+    // transition itself.
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset, 12, 0, 0, 0)
     const times = timesFor(loc, date)
     const dayId = (offset + 1) * 10
 
@@ -85,6 +89,8 @@ export function buildSchedule(
 
 export type ScheduleResult =
   | { status: 'scheduled'; count: number }
+  /** Scheduled, but the OS refused exact alarms — delivery may drift. */
+  | { status: 'inexact'; count: number }
   | { status: 'denied' }
   | { status: 'unsupported' }
   | { status: 'error'; message: string }
@@ -109,14 +115,15 @@ export async function scheduleReminders(
     const permission = await LocalNotifications.requestPermissions()
     if (permission.display !== 'granted') return { status: 'denied' }
 
-    const pending = await LocalNotifications.getPending()
-    if (pending.notifications.length) {
-      await LocalNotifications.cancel({ notifications: pending.notifications })
-    }
-
+    const before = await LocalNotifications.getPending()
     const schedule = buildSchedule(loc, now)
+
+    // Schedule FIRST (ids are stable, so this replaces same-id alarms), then
+    // clear only the leftovers. Cancelling up front would leave the user with
+    // no reminders at all if scheduling then failed.
+    let result: Awaited<ReturnType<typeof LocalNotifications.schedule>> | undefined
     if (schedule.length) {
-      await LocalNotifications.schedule({
+      result = await LocalNotifications.schedule({
         notifications: schedule.map((n) => ({
           id: n.id,
           title: n.title,
@@ -126,6 +133,15 @@ export async function scheduleReminders(
         })),
       })
     }
+
+    const keep = new Set(schedule.map((n) => n.id))
+    const stale = before.notifications.filter((n) => !keep.has(n.id))
+    if (stale.length) await LocalNotifications.cancel({ notifications: stale })
+
+    // The plugin downgrades to inexact alarms when exact-alarm permission is
+    // refused; say so rather than promising times we cannot keep.
+    const warning = (result as { warning?: string } | undefined)?.warning
+    if (warning) return { status: 'inexact', count: schedule.length }
     return { status: 'scheduled', count: schedule.length }
   } catch (e) {
     return { status: 'error', message: e instanceof Error ? e.message : String(e) }

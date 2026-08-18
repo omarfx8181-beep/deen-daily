@@ -77,9 +77,8 @@ npm run cap:android     # builds the web app, syncs it, opens Android Studio
 ```
 
 Then press Run in Android Studio with a device attached. Requirements:
-Android Studio (with the Android SDK) for Android; for iOS, add the platform
-once with `npx cap add ios` and open it with `npx cap open ios` on a Mac with
-Xcode. Once installed, open the location panel on Today and tap
+Android Studio (with the Android SDK) for Android; for iOS, on a Mac with Xcode run
+`npm i -D @capacitor/ios && npx cap add ios`, then `npx cap open ios`. Once installed, open the location panel on Today and tap
 **Remind me for prayers & adhkar** — the next seven days of prayer times plus
 the two adhkar reminders (after Fajr, before Maghrib) are scheduled on the
 device, offline.

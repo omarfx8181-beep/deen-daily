@@ -6,9 +6,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 // The web app is served from https://<user>.github.io/deen-daily/, but the
 // native shell serves the same build from the root of its bundled assets —
 // so a native build uses relative URLs instead of the Pages sub-path.
-const native = !!process.env.DEEN_NATIVE
-
-export default defineConfig({
+// Selected with Vite's own --mode flag so the command works on every OS
+// (a leading VAR=value assignment is not valid on Windows shells).
+export default defineConfig(({ mode }) => {
+  const native = mode === 'native'
+  return {
   base: native ? './' : '/deen-daily/',
   plugins: [
     react(),
@@ -57,10 +59,11 @@ export default defineConfig({
       },
     }),
   ],
-  test: {
-    environment: 'jsdom',
-    // Deterministic clock for date/prayer-time tests: the app's default
-    // location is in this zone, which is the realistic device case.
-    env: { TZ: 'America/Chicago' },
-  },
+    test: {
+      environment: 'jsdom',
+      // Deterministic clock for date/prayer-time tests: the app's default
+      // location is in this zone, which is the realistic device case.
+      env: { TZ: 'America/Chicago' },
+    },
+  }
 })
