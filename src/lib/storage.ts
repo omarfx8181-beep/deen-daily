@@ -30,9 +30,13 @@ export interface MainState {
   streak: Streak
   quran: { page: number; bookmarks: Bookmark[] }
   hifz: number[]
+  /** surah number -> date it was marked memorized (drives the review queue) */
+  hifzLog: Record<string, string>
   duas: string[]
   /** Stored on-device only; used to compute prayer times locally. */
   location: GeoLocation
+  /** Whether the user asked for prayer/adhkar reminders (native builds). */
+  reminders: boolean
 }
 
 export async function sGet<T>(key: string): Promise<T | null> {
@@ -67,8 +71,10 @@ export const defaultMain = (): MainState => ({
   streak: { count: 0, last: null },
   quran: { page: 1, bookmarks: [] },
   hifz: [],
+  hifzLog: {},
   duas: [],
   location: { ...DEFAULT_LOCATION },
+  reminders: false,
 })
 
 export async function loadDay(dateKey: string): Promise<DayLog> {
@@ -89,8 +95,10 @@ export async function loadMain(): Promise<MainState> {
     main.streak = m.streak || { count: 0, last: null }
     main.quran = Object.assign({ page: 1, bookmarks: [] }, m.quran)
     main.hifz = m.hifz || []
+    main.hifzLog = m.hifzLog || {}
     main.duas = m.duas || []
     main.location = { ...DEFAULT_LOCATION, ...(m.location ?? {}) }
+    main.reminders = m.reminders ?? false
   }
   return main
 }

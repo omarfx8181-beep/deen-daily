@@ -11,6 +11,7 @@ import JournalTab from './tabs/JournalTab'
 import { todayKey, yesterdayKey } from './lib/dates'
 import { applyJournal } from './lib/journal'
 import { countDone, updateStreak } from './lib/streak'
+import { scheduleReminders } from './lib/notifications'
 import { TASKS } from './data/content'
 import {
   defaultDay,
@@ -85,6 +86,19 @@ export default function App() {
     }
   }, [])
 
+  // Reminders only cover the next seven days, so top them up every time the
+  // app is opened or comes back to the foreground — otherwise they would
+  // quietly stop after a week.
+  useEffect(() => {
+    if (!main?.reminders) return
+    const topUp = () => {
+      if (document.visibilityState === 'visible') void scheduleReminders(main.location)
+    }
+    topUp()
+    document.addEventListener('visibilitychange', topUp)
+    return () => document.removeEventListener('visibilitychange', topUp)
+  }, [main?.reminders, main?.location])
+
   const showToast = useCallback((msg: string) => {
     clearTimeout(toastTimer.current)
     setToast({ msg, show: true })
@@ -139,7 +153,9 @@ export default function App() {
               day={day}
               streakCount={main.streak.count}
               location={main.location}
+              reminders={main.reminders}
               onChangeLocation={(location) => commitMain({ ...main, location })}
+              onChangeReminders={(reminders) => commitMain({ ...main, reminders })}
               onToggleTask={(id) => void commitDay((d) => ({ ...d, c: { ...d.c, [id]: !d.c[id] } }))}
             />
           )}

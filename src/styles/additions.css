@@ -45,3 +45,17 @@
   direction:rtl;text-align:right;margin:6px 0}
 .ayah .translit{color:#B9C2D4;font-size:.85rem;font-style:italic;line-height:1.8;margin-bottom:4px}
 .ayah .meaning{color:var(--slate);font-size:.86rem;line-height:1.7;font-style:normal}
+
+/* hifz review queue */
+.review-card{padding:14px 16px}
+.track{padding:10px 0;border-bottom:1px solid var(--line2)}
+.track:last-of-type{border-bottom:none}
+.track-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.track-head b{font-family:'Marcellus',serif;color:var(--brass);font-size:.95rem;letter-spacing:.06em}
+.track-head span{font-size:.7rem;color:var(--slate)}
+.track-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.track-chips .pill{cursor:pointer;color:var(--moon);background:var(--panel2)}
+.track-chips .pill:hover{border-color:var(--brass)}
+.track-ayat{color:var(--slate);font-size:.62rem;margin-left:4px}
+.track-empty{margin-top:6px;font-size:.78rem}
+.review-foot{margin-top:12px;font-size:.72rem;line-height:1.6}

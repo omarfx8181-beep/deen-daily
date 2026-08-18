@@ -50,6 +50,16 @@ Copied verbatim from `DEEN-APP-SPEC.md` — these are permanent project rules:
   zero login, all personal data on-device. No accounts, no social, no ads ever, no
   analytics beyond crash reports, no AI-generated religious content at runtime.
 
+## Native build
+
+- `android/` is a Capacitor-generated native project — the web build stays the
+  source of truth; run `npm run cap:sync` after changing the app rather than
+  editing web assets under `android/`.
+- Native builds set `DEEN_NATIVE=1`, which switches the Vite base path to
+  relative and disables the service worker (the shell serves local assets).
+- Local notifications are native-only: on the web `scheduleReminders` reports
+  `unsupported` rather than pretending to schedule.
+
 ## Working style
 
 - All work in **small commits**, each one scoped to a single concern, with clear

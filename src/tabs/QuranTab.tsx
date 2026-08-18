@@ -5,6 +5,7 @@ import type { MainState } from '../lib/storage'
 import { useState } from 'react'
 import SectionNav from '../components/SectionNav'
 import Reader from '../components/quran/Reader'
+import ReviewQueue from '../components/quran/ReviewQueue'
 import ReadingTracker from '../components/quran/ReadingTracker'
 import Bookmarks from '../components/quran/Bookmarks'
 import HifzGrid from '../components/quran/HifzGrid'
@@ -24,12 +25,26 @@ export default function QuranTab({
     <>
       <SectionNav
         items={[
+          { label: 'Review', id: 'review' },
           { label: 'Read', id: 'reader' },
           { label: 'Tracker', id: 'tracker' },
           { label: 'Bookmarks', id: 'bookmarks' },
           { label: 'Hifz', id: 'hifz' },
           { label: 'Method', id: 'method' },
         ]}
+      />
+      <ReviewQueue
+        hifz={main.hifz}
+        hifzLog={main.hifzLog}
+        onOpenSurah={(n) => {
+          setSurah(n)
+          document.getElementById('reader')?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'instant'
+              : 'smooth',
+            block: 'start',
+          })
+        }}
       />
       <Reader surah={surah} onChangeSurah={setSurah} />
       <ReadingTracker
@@ -58,12 +73,19 @@ export default function QuranTab({
       />
       <HifzGrid
         hifz={main.hifz}
-        onToggle={(n) =>
+        onToggle={(n) => {
+          const removing = main.hifz.includes(n)
+          const hifzLog = { ...main.hifzLog }
+          // Record when a surah was memorised so the review queue can tell
+          // this week's sabqi from older manzil.
+          if (removing) delete hifzLog[String(n)]
+          else hifzLog[String(n)] = todayKey()
           onUpdateMain({
             ...main,
-            hifz: main.hifz.includes(n) ? main.hifz.filter((x) => x !== n) : [...main.hifz, n],
+            hifz: removing ? main.hifz.filter((x) => x !== n) : [...main.hifz, n],
+            hifzLog,
           })
-        }
+        }}
       />
       <HifzGuide />
     </>

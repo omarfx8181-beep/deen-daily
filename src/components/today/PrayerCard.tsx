@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { buildSchedule, cancelReminders, isNative, scheduleReminders } from '../../lib/notifications'
 import {
   DEFAULT_LOCATION,
   PRAYER_LABEL,
@@ -10,10 +11,14 @@ import {
 
 export default function PrayerCard({
   location,
+  reminders,
   onChangeLocation,
+  onChangeReminders,
 }: {
   location: GeoLocation
+  reminders: boolean
   onChangeLocation: (loc: GeoLocation) => void
+  onChangeReminders: (on: boolean) => void
 }) {
   const [now, setNow] = useState(() => new Date())
   const [editing, setEditing] = useState(false)
@@ -21,6 +26,12 @@ export default function PrayerCard({
   const [lng, setLng] = useState(String(location.lng))
   const [label, setLabel] = useState(location.label)
   const [geoError, setGeoError] = useState('')
+  const [native, setNative] = useState(false)
+  const [remindState, setRemindState] = useState('')
+
+  useEffect(() => {
+    void isNative().then(setNative)
+  }, [])
 
   // Reopening the panel shows the location actually in effect, not the
   // values from an edit that was abandoned.
@@ -40,18 +51,41 @@ export default function PrayerCard({
   }, [])
 
   const next = nextPrayer(location, now)
+  // Only for the web copy — do not rebuild a 7-day schedule on every render.
+  const plannedCount = useMemo(() => buildSchedule(location).length, [location])
+
+  const coord = (raw: string, limit: number) => {
+    const t = raw.trim()
+    if (t === '') return null // an empty field must not silently become 0
+    const v = Number(t)
+    return Number.isFinite(v) && Math.abs(v) <= limit ? v : null
+  }
 
   const save = () => {
-    const nlat = Number(lat)
-    const nlng = Number(lng)
-    if (!Number.isFinite(nlat) || Math.abs(nlat) > 90 || !Number.isFinite(nlng) || Math.abs(nlng) > 180) {
+    const nlat = coord(lat, 90)
+    const nlng = coord(lng, 180)
+    if (nlat === null || nlng === null) {
       setGeoError('Enter a latitude between −90 and 90 and a longitude between −180 and 180.')
       return
     }
-    onChangeLocation({ lat: nlat, lng: nlng, label: label.trim() || 'My location' })
+    const next = { lat: nlat, lng: nlng, label: label.trim() || 'My location' }
+    onChangeLocation(next)
     setGeoError('')
     setEditing(false)
+    // Alarms already on the device hold the OLD city's times — re-arm them.
+    if (reminders) void scheduleReminders(next).then(describe).then(setRemindState)
   }
+
+  const describe = (r: Awaited<ReturnType<typeof scheduleReminders>>) =>
+    r.status === 'scheduled'
+      ? `Reminders set for the next 7 days (${r.count}).`
+      : r.status === 'inexact'
+        ? `Set (${r.count}), but this device refused exact alarms — allow "Alarms & reminders" in settings so prayer times are not delayed.`
+        : r.status === 'denied'
+          ? 'Notifications are turned off for Deen Daily in your device settings.'
+          : r.status === 'unsupported'
+            ? 'Reminders need the installed app build.'
+            : 'Reminders could not be set on this device.'
 
   const useDevice = () => {
     if (!navigator.geolocation) {
@@ -141,6 +175,44 @@ export default function PrayerCard({
             Times use the ISNA method, calculated on this device — no account, no network, and your
             location is never sent anywhere. Shown in this device's time zone.
           </p>
+          <div className="qrow" style={{ marginTop: 8 }}>
+            {native ? (
+              reminders ? (
+                <button
+                  className="btn small"
+                  onClick={async () => {
+                    await cancelReminders()
+                    onChangeReminders(false)
+                    setRemindState('Reminders turned off.')
+                  }}
+                >
+                  Turn reminders off
+                </button>
+              ) : (
+                <button
+                  className="btn small"
+                  onClick={async () => {
+                    const r = await scheduleReminders(location)
+                    if (r.status === 'scheduled' || r.status === 'inexact') onChangeReminders(true)
+                    setRemindState(describe(r))
+                  }}
+                >
+                  Remind me for prayers &amp; adhkar
+                </button>
+              )
+            ) : (
+              <p className="muted">
+                Prayer and adhkar reminders need the installed app build — a web page cannot wake
+                your phone reliably. The next {plannedCount} reminders are ready and will start as
+                soon as you run the app build.
+              </p>
+            )}
+          </div>
+          {remindState ? (
+            <p className="muted" style={{ marginTop: 4 }}>
+              {remindState}
+            </p>
+          ) : null}
         </div>
       )}
     </div>

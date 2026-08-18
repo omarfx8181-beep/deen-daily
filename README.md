@@ -46,9 +46,10 @@ the prototype-verified surah metadata.
 
 ## Stack
 
-- **React + TypeScript + Vite** (web app, this phase)
-- **Capacitor** (native iOS/Android wrap, later phase)
-- Persistence: `localStorage` now, swappable for Capacitor Preferences later
+- **React + TypeScript + Vite** (web app)
+- **Capacitor** (native Android/iOS shell, for notifications)
+- Prayer times: `adhan`, computed on device — no API, no network
+- Persistence: `localStorage`, swappable for Capacitor Preferences
   (same keys, same JSON shapes)
 - Tests: Vitest
 
@@ -66,6 +67,22 @@ and keeps all your data (streaks, checklists, journal) on the device —
 nothing is sent anywhere. Every merge to `main` deploys the latest version
 automatically; the installed app picks updates up on next launch.
 
+## Build the phone app (prayer & adhkar reminders)
+
+The web app cannot reliably wake your phone, so **notifications need the
+native build**. The Android project is committed and ready:
+
+```sh
+npm run cap:android     # builds the web app, syncs it, opens Android Studio
+```
+
+Then press Run in Android Studio with a device attached. Requirements:
+Android Studio (with the Android SDK) for Android; for iOS, on a Mac with Xcode run
+`npm i -D @capacitor/ios && npx cap add ios`, then `npx cap open ios`. Once installed, open the location panel on Today and tap
+**Remind me for prayers & adhkar** — the next seven days of prayer times plus
+the two adhkar reminders (after Fajr, before Maghrib) are scheduled on the
+device, offline.
+
 ## Getting started
 
 ```sh
@@ -74,7 +91,9 @@ npm run dev             # dev server
 npm test                # unit tests
 npm run build           # type-check + production build
 npm run verify:content  # character-by-character content integrity check
+npm run verify:data     # sha256 + structural check of the bundled datasets
 npm run extract:content # regenerate src/data/content.js from the prototype
+npm run cap:android     # build + sync + open the native Android project
 ```
 
 ## Roadmap
@@ -82,16 +101,16 @@ npm run extract:content # regenerate src/data/content.js from the prototype
 - [x] **Phase 1** — React scaffold, all content arrays extracted verbatim with
   a verification gate, Today tab (lesson, motivation, name of the day,
   checklist, adhkar fortress) with persistence and streak logic.
-- [ ] **Phase 2** — Quran tab: page tracker, khatmah calculator, bookmarks,
+- [x] **Phase 2** — Quran tab: page tracker, khatmah calculator, bookmarks,
   hifz tracker, memorization guide.
-- [ ] **Phase 3** — Learn + Journal tabs.
+- [x] **Phase 3** — Learn + Journal tabs.
 - [x] **Phase 4** — transliterations for the Fortress, search and quick
   navigation.
 - [x] **Phase 5** — prayer times computed on device (ISNA), the full Qur'an with
   per-ayah transliteration and recitation, the complete Hisn al-Muslim.
-- [ ] **Next** — Capacitor wrap for prayer and adhkar notifications; hifz review
-  queue (sabaq/sabqi/manzil from the tracker); home-screen widget; khatmah goal
-  mode.
+- [x] **Phase 6** — daily hifz review queue (sabaq/sabqi/manzil) and the
+  Capacitor native build with prayer and adhkar notifications.
+- [ ] **Next** — home-screen widget, khatmah goal mode, journal export.
 
 ## Principles
 

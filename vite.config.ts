@@ -3,12 +3,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Served from https://<user>.github.io/deen-daily/
-export default defineConfig({
-  base: '/deen-daily/',
+// The web app is served from https://<user>.github.io/deen-daily/, but the
+// native shell serves the same build from the root of its bundled assets —
+// so a native build uses relative URLs instead of the Pages sub-path.
+// Selected with Vite's own --mode flag so the command works on every OS
+// (a leading VAR=value assignment is not valid on Windows shells).
+export default defineConfig(({ mode }) => {
+  const native = mode === 'native'
+  return {
+  base: native ? './' : '/deen-daily/',
   plugins: [
     react(),
     VitePWA({
+      // Inside the native shell the assets are already local and updates
+      // ship through the app store, so the service worker only applies
+      // to the web build.
+      disable: native,
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
@@ -49,10 +59,11 @@ export default defineConfig({
       },
     }),
   ],
-  test: {
-    environment: 'jsdom',
-    // Deterministic clock for date/prayer-time tests: the app's default
-    // location is in this zone, which is the realistic device case.
-    env: { TZ: 'America/Chicago' },
-  },
+    test: {
+      environment: 'jsdom',
+      // Deterministic clock for date/prayer-time tests: the app's default
+      // location is in this zone, which is the realistic device case.
+      env: { TZ: 'America/Chicago' },
+    },
+  }
 })
